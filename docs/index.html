@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ctext y=%22.9em%22 font-size=%2290%22%3E%F0%9F%8E%9A%3C/text%3E%3C/svg%3E">
-<title>LayerPolish — polish your own recordings</title>
+<title>DamoDemo — polish your own recordings</title>
 <style>
   :root {
     --bg: #f6f4ef; --panel: #ffffff; --ink: #1d1b18; --muted: #6b665d; --line: #e3ded4;
@@ -168,7 +168,7 @@
 <body>
 <main>
   <header>
-    <h1>LayerPolish</h1>
+    <h1>DamoDemo</h1>
     <p>Polish your own recordings one layer at a time: clean up noise, tighten timing, shape the tone. Then listen to the layers together, balance them, and render the song. Adjust it in plain English.</p>
     <div class="badge">🔒 <span>Runs entirely in your browser. <b>Your audio is never uploaded.</b> Nothing is generated: every sound is yours.</span></div>
   </header>
@@ -176,8 +176,8 @@
 
   <button class="howto-tab" id="howto-tab" aria-controls="howto" aria-expanded="false">How to use</button>
   <div class="howto-backdrop" id="howto-backdrop"></div>
-  <aside class="howto-panel" id="howto" aria-label="How to use LayerPolish" aria-hidden="true">
-    <div class="howto-head"><h2>How to use LayerPolish</h2><button class="howto-close" id="howto-close" aria-label="Close">×</button></div>
+  <aside class="howto-panel" id="howto" aria-label="How to use DamoDemo" aria-hidden="true">
+    <div class="howto-head"><h2>How to use DamoDemo</h2><button class="howto-close" id="howto-close" aria-label="Close">×</button></div>
     <ol>
       <li><b>Record your takes.</b> One instrument or vocal per recording, all at the same tempo (a click track helps), all starting from the same moment.
         <ul><li>Leave about a second of silence at the start of each take, so the noise clean-up can learn your room.</li>
@@ -201,7 +201,7 @@
       <ul>
         <li>Everything runs on your device. Your recordings are never uploaded, and nothing is generated: every sound is your own playing.</li>
         <li>Editing never changes your original recordings. Order: arrange first, then polish.</li>
-        <li>Not sure what to type? <a href="https://github.com/DJWWC/layerpolish/blob/main/PROMPT_DICTIONARY.md" target="_blank" rel="noopener">See every phrase it understands</a>. It also tells you when it can't do something.</li>
+        <li>Not sure what to type? <a href="https://github.com/DJWWC/damodemo/blob/main/PROMPT_DICTIONARY.md" target="_blank" rel="noopener">See every phrase it understands</a>. It also tells you when it can't do something.</li>
         <li>No sound on iPad? Check the volume and that the iPad isn't muted (Control Centre), then press Play again.</li>
         <li>Nothing is saved between visits yet, so download your final mix before closing the page.</li>
       </ul></div>
@@ -234,7 +234,7 @@
     <h2><span class="step">3</span> Overall style</h2>
     <p class="hint">Applies to every layer. Each layer card also has its own request box.</p>
     <div class="row"><label>Preset <select id="preset"></select></label></div>
-    <p class="hint" style="margin-top:12px">Describe what you want or what's wrong, in your own words: “warmer”, “the vocal sounds nasal”, “guitar is too bright”, “slightly wider”. Name a layer to target it, otherwise it applies to everything. <a href="https://github.com/DJWWC/layerpolish/blob/main/PROMPT_DICTIONARY.md" target="_blank" rel="noopener">See every phrase it understands</a>.</p>
+    <p class="hint" style="margin-top:12px">Describe what you want or what's wrong, in your own words: “warmer”, “the vocal sounds nasal”, “guitar is too bright”, “slightly wider”. Name a layer to target it, otherwise it applies to everything. <a href="https://github.com/DJWWC/damodemo/blob/main/PROMPT_DICTIONARY.md" target="_blank" rel="noopener">See every phrase it understands</a>.</p>
     <div class="row" style="flex-wrap:nowrap">
       <textarea id="prompt" placeholder="vocal: warmer and less harsh; guitar: tighter"></textarea>
       <button id="apply">Apply</button>
@@ -276,7 +276,7 @@
   </section>
 
   <footer>
-    Prototype · prompt interpreter v<span id="ver"></span>. Vocal tuning isn't in the browser version yet. Source: <a href="https://github.com/DJWWC/layerpolish">github.com/DJWWC/layerpolish</a>
+    Prototype · prompt interpreter v<span id="ver"></span>. Vocal tuning isn't in the browser version yet. Source: <a href="https://github.com/DJWWC/damodemo">github.com/DJWWC/damodemo</a>
   </footer>
 </main>
 <script type="module" src="app.js"></script>

@@ -1,4 +1,4 @@
-// LayerPolish browser engine. Pure JavaScript DSP: no uploads, no Web Audio
+// DamoDemo browser engine. Pure JavaScript DSP: no uploads, no Web Audio
 // dependency, so it behaves the same in every browser and in Node tests.
 // Every function edits or processes the user's own audio; nothing is generated.
 

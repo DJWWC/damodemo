@@ -1,4 +1,4 @@
-"""LayerPolish prototype - command line entry point.
+"""DamoDemo prototype - command line entry point.
 
 Example:
   python polish.py \

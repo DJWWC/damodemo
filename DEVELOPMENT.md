@@ -1,4 +1,4 @@
-# LayerPolish: development notes
+# DamoDemo: development notes
 
 Working notes on where the project is going. User-facing instructions are in
 `README.md`.

@@ -1,4 +1,4 @@
-# LayerPolish: real-world test plan
+# DamoDemo: real-world test plan
 
 Everything so far has been tested with synthetic demo takes in Chrome's iPad
 emulation. This plan tests it with **real recordings on a real iPad**.
@@ -8,7 +8,7 @@ Allow about an hour. Note results in the tables (✅ works / ⚠️ works but od
 
 **Device:** iPad model ________ · iPadOS version ________ · Browser: Safari / other ________
 
-Site: **https://djwwc.github.io/layerpolish/**
+Site: **https://djwwc.github.io/damodemo/**
 
 ---
 

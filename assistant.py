@@ -15,7 +15,7 @@ import re
 
 from chain import PARAMS, clamp
 
-MODEL = os.environ.get("LAYERPOLISH_MODEL", "claude-haiku-5-5")
+MODEL = os.environ.get("DAMODEMO_MODEL", "claude-haiku-5-5")
 
 SYSTEM = (
     "You are a mixing engineer inside a tool that polishes a musician's own recordings. "

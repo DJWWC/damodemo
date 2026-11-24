@@ -80,7 +80,7 @@ function effect(ch) {
 const esc = (s) => s.replace(/\|/g, "\\|");
 
 const L = [];
-L.push(`# LayerPolish prompt dictionary`, ``);
+L.push(`# DamoDemo prompt dictionary`, ``);
 L.push(`**Interpreter version ${I.INTERPRETER_VERSION}.** This file is generated from \`docs/interpret.js\` by \`node tools/build_dictionary.mjs > PROMPT_DICTIONARY.md\`. Don't edit it by hand: change the vocabulary in \`interpret.js\`, bump \`INTERPRETER_VERSION\`, add a \`HISTORY\` line, and regenerate.`, ``);
 L.push(`This is the free, offline interpreter in the browser version. It matches words and phrases. It doesn't use AI.`, ``);
 L.push(`## Version history`, ``, `| Version | Date | What changed |`, `|---|---|---|`);

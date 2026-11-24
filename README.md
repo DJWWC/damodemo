@@ -1,7 +1,7 @@
-# LayerPolish (prototype)
+# DamoDemo (prototype)
 
 An automatic producer/engineer for raw home recordings. You record each part
-(guitar, vocal, bass...) as its own track. LayerPolish:
+(guitar, vocal, bass...) as its own track. DamoDemo:
 
 1. **Recognises** each take: tempo, key, chords (instruments), sung notes and how
    far off they are (vocals), timing accuracy, noise and tone.
@@ -15,7 +15,7 @@ An automatic producer/engineer for raw home recordings. You record each part
 
 ## How to use (quick start)
 
-Open **https://djwwc.github.io/layerpolish/** on an iPad or computer. The same
+Open **https://djwwc.github.io/damodemo/** on an iPad or computer. The same
 guide is in the **How to use** tab on the right edge of the page.
 
 1. **Record your takes:** one instrument or vocal per recording, same tempo
@@ -43,7 +43,7 @@ page.
 
 ## Try it in your browser
 
-**https://djwwc.github.io/layerpolish/**
+**https://djwwc.github.io/damodemo/**
 
 Nothing to install, and it's built for **iPad** (Safari) as well as computers.
 Work one layer at a time:
@@ -165,7 +165,7 @@ This handles much freer requests ("the vocal sounds a bit nasal and far away").
 
 ```bash
 export ANTHROPIC_API_KEY=sk-ant-...           # Windows PowerShell: $env:ANTHROPIC_API_KEY="sk-ant-..."
-export LAYERPOLISH_MODEL=claude-haiku-5-5     # optional; default shown
+export DAMODEMO_MODEL=claude-haiku-5-5     # optional; default shown
 ```
 
 Only the prompt text, the settings and the numeric measurements are sent. Audio

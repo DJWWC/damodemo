@@ -1,4 +1,4 @@
-# LayerPolish prompt dictionary
+# DamoDemo prompt dictionary
 
 **Interpreter version 2.** This file is generated from `docs/interpret.js` by `node tools/build_dictionary.mjs > PROMPT_DICTIONARY.md`. Don't edit it by hand: change the vocabulary in `interpret.js`, bump `INTERPRETER_VERSION`, add a `HISTORY` line, and regenerate.
 
@@ -117,9 +117,9 @@ These show a message instead of silently doing nothing.
 | delay · echo / echoes / echoey · slap-back · ping-pong | Delay/echo isn't available yet. Try “more reverb” for space. |
 | chorus effect · flang… · phaser / phasing · tremolo · vibrato · wah · auto-pan · rotary · leslie | Modulation effects (chorus, flanger, phaser, tremolo) aren't available yet. |
 | in / during / on / for the chorus, verse, bridge, intro, outro, middle eight, drop, hook, start, end · first verse · second verse | Changes apply to the whole song. Section-by-section edits aren't supported yet. |
-| faster · slower · speed up / speed it up · slow down / slow it down · tempo · bpm · half-time · double-time | Changing the tempo isn't supported. LayerPolish keeps your performance at its own speed. |
+| faster · slower · speed up / speed it up · slow down / slow it down · tempo · bpm · half-time · double-time | Changing the tempo isn't supported. DamoDemo keeps your performance at its own speed. |
 | transpose · change key / change the key · key change · pitch up / pitch down / pitch it up … · semitone · octave | Changing key or pitch isn't supported. |
-| add + drums, beat, bassline, harmony, backing, strings, piano, synth, pad, choir, instrument, vocals, percussion, claps · harmonise · double-track · backing vocals · generate · write · compose · sing | LayerPolish only edits what you recorded, so it won't add or generate new parts. |
+| add + drums, beat, bassline, harmony, backing, strings, piano, synth, pad, choir, instrument, vocals, percussion, claps · harmonise · double-track · backing vocals · generate · write · compose · sing | DamoDemo only edits what you recorded, so it won't add or generate new parts. |
 | sound(s) like / in the style of / like + a capitalised name (e.g. Like Adele, sounds like Bon Iver) | Sounding like a particular artist needs the Claude version (see DEVELOPMENT.md). For now, describe the sound instead: warmer, drier, brighter… |
 | sound(s) like / in the style of / like + a known artist typed in lower case (ed sheeran, taylor swift, adele, billie eilish, coldplay, the beatles, oasis, radiohead, john mayer, bon iver, phoebe bridgers, nirvana, queen) | Sounding like a particular artist needs the Claude version (see DEVELOPMENT.md). For now, describe the sound instead: warmer, drier, brighter… |
 

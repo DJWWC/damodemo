@@ -620,4 +620,4 @@ $("howto-close").onclick = () => setGuide(false);
 $("howto-backdrop").onclick = () => setGuide(false);
 document.addEventListener("keydown", (e) => { if (e.key === "Escape") setGuide(false); });
 renderAll();
-window.layerpolish = { state, timeline, history };   // handy for debugging in the browser console
+window.damodemo = { state, timeline, history };   // handy for debugging in the browser console
