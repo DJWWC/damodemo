@@ -17,10 +17,20 @@ An automatic producer/engineer for raw home recordings. You record each part
 
 **https://djwwc.github.io/layerpolish/**
 
-Nothing to install. Add your takes (or load the demo), pick a preset, type
-adjustments in plain English, and click **Polish my song**. You can switch
-between raw and polished while it plays, and download the mix, each polished
-layer and the processing log.
+Nothing to install. Work one layer at a time:
+
+1. **Layers:** add each take (or load the demo). Each layer card has its own
+   **Polish this layer** button, its own request box ("warmer, less nasal"),
+   its settings, and a before/after report. Its status shows *Not polished*,
+   *Polished* or *Changed: re-polish*.
+2. **Overall style:** a preset and a request box for the whole song.
+3. **Mixer:** plays every layer together in sync, using the play bar that
+   stays at the top of the page, with a timeline slider to scrub. Each layer
+   has **Mute**, **Solo**, a **Raw / Polished** switch (works mid-playback),
+   and **volume** and **pan** sliders. Space bar plays and stops.
+4. **Final mix:** renders exactly what the mixer is set to (muted layers left
+   out, raw or polished as chosen) through the song-level pass. You can compare
+   it with the unprocessed mix and download the WAV and processing log.
 
 The browser version does all the processing on your own device in
 JavaScript (`docs/`). Your audio is never uploaded. It has everything in the

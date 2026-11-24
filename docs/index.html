@@ -72,18 +72,58 @@
   canvas { width: 100%; height: 70px; display: block; margin-top: 12px; border-radius: 6px; background: var(--soft); }
   footer { color: var(--muted); font-size: 12px; margin-top: 28px; }
   footer a { color: inherit; }
+
+  /* transport bar (sticky) */
+  .transport { position: sticky; top: 8px; z-index: 10; background: var(--panel); padding: 8px 12px; margin-top: 18px;
+    display: flex; gap: 12px; align-items: center; border: 1px solid var(--line); border-radius: var(--radius);
+    box-shadow: 0 4px 14px rgba(0,0,0,.08); }
+  .transport[hidden] { display: none; }
+  .transport button.play { min-width: 92px; font-weight: 600; }
+  .transport input[type=range] { flex: 1; accent-color: var(--accent); }
+  .time { font-family: var(--mono); font-size: 13px; color: var(--muted); min-width: 92px; text-align: right; }
+  /* layer cards */
+  .status { font-size: 12px; padding: 2px 9px; border-radius: 999px; background: var(--soft); color: var(--muted); }
+  .status.ok { background: color-mix(in srgb, var(--good) 15%, transparent); color: var(--good); font-weight: 600; }
+  .status.stale { background: color-mix(in srgb, var(--accent) 15%, transparent); color: var(--accent); font-weight: 600; }
+  .layer .prompt-row { display: flex; gap: 8px; margin-top: 8px; }
+  .layer .prompt-row input { flex: 1; }
+  .layer ul.changes { margin-top: 6px; }
+  .report { font-size: 13px; color: var(--muted); margin-top: 6px; }
+  .report b { color: var(--ink); }
+  /* mixer */
+  .mixer { display: grid; grid-template-columns: minmax(70px, 1fr) auto auto auto minmax(0, 2fr) minmax(0, 1.3fr); gap: 8px 10px; align-items: center; margin-top: 10px; width: 100%; padding-right: 4px; }
+  .mixer .h { font-size: 12px; color: var(--muted); }
+  .mixer .name { font-weight: 600; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .mixer .name small { display: block; font-weight: 400; color: var(--muted); font-size: 12px; }
+  .toggle { width: 32px; padding: 4px 0; font-size: 12px; font-weight: 700; text-align: center; }
+  .toggle.on.m { background: #b8442f; color: #fff; border-color: #b8442f; }
+  .toggle.on.s { background: #c9a227; color: #1d1b18; border-color: #c9a227; }
+  .ab.small button { padding: 4px 10px; font-size: 13px; }
+  .ab button:disabled { opacity: .35; cursor: default; }
+  .slider { display: flex; gap: 8px; align-items: center; font-size: 12px; }
+  .slider { min-width: 0; }
+  .slider input { flex: 1; accent-color: var(--accent); min-width: 40px; width: 100%; }
+  .slider span { font-family: var(--mono); color: var(--muted); min-width: 46px; text-align: right; flex: none; }
+  .slider.pan span { min-width: 30px; text-align: left; }
+  @media (max-width: 720px) { .mixer { grid-template-columns: 1fr auto auto auto; } .mixer .wide { grid-column: span 2; } .mixer .h.wide-h { display: none; } }
 </style>
 </head>
 <body>
 <main>
   <header>
     <h1>LayerPolish</h1>
-    <p>Polish your own recordings, one layer at a time: clean up noise, tighten timing, shape the tone, then balance the whole song. Adjust it in plain English.</p>
+    <p>Polish your own recordings one layer at a time: clean up noise, tighten timing, shape the tone. Then listen to the layers together, balance them, and render the song. Adjust it in plain English.</p>
     <div class="badge">🔒 <span>Runs entirely in your browser. <b>Your audio is never uploaded.</b> Nothing is generated: every sound is yours.</span></div>
   </header>
 
-  <section id="s-layers">
-    <h2><span class="step">1</span> Add your layers</h2>
+  <div class="transport" id="transport" hidden>
+    <button class="play primary" id="play">▶ Play</button>
+    <input type="range" id="seek" min="0" max="1000" value="0" aria-label="Position">
+    <span class="time" id="time">0:00 / 0:00</span>
+  </div>
+
+  <section>
+    <h2><span class="step">1</span> Layers</h2>
     <p class="hint">One instrument or vocal per file, all recorded to the same tempo and starting at the same moment. Start each take with about a second of silence so the noise clean-up can learn your room. The first layer sets the timing.</p>
     <div class="row">
       <label class="row"><input id="file" type="file" accept="audio/*" multiple hidden><button id="add">+ Add audio files</button></label>
@@ -94,10 +134,9 @@
   </section>
 
   <section>
-    <h2><span class="step">2</span> Style and adjustments</h2>
-    <div class="row">
-      <label>Preset <select id="preset"></select></label>
-    </div>
+    <h2><span class="step">2</span> Overall style</h2>
+    <p class="hint">Applies to every layer. Each layer card also has its own request box.</p>
+    <div class="row"><label>Preset <select id="preset"></select></label></div>
     <p class="hint" style="margin-top:12px">Describe what you want or what's wrong, in your own words: “warmer”, “the vocal sounds nasal”, “guitar is too bright”, “slightly wider”. Name a layer to target it, otherwise it applies to everything. <a href="https://github.com/DJWWC/layerpolish/blob/main/PROMPT_DICTIONARY.md" target="_blank" rel="noopener">See every phrase it understands</a>.</p>
     <div class="row" style="flex-wrap:nowrap">
       <textarea id="prompt" placeholder="vocal: warmer and less harsh; guitar: tighter"></textarea>
@@ -108,16 +147,29 @@
   </section>
 
   <section>
-    <h2><span class="step">3</span> Polish</h2>
+    <h2><span class="step">3</span> Mixer</h2>
+    <p class="hint">Plays all layers together. Use <b>M</b> to mute and <b>S</b> to solo. Switch each layer between <b>Raw</b> and <b>Polished</b> while it plays. Volume and pan here are part of the final mix.</p>
     <div class="row">
-      <button id="go" class="primary" disabled>Polish my song</button>
+      <button id="polish-all">Polish all unpolished layers</button>
+      <button class="small" id="all-raw">All raw</button>
+      <button class="small" id="all-pol">All polished</button>
+      <span id="mix-progress" class="progress"></span>
+    </div>
+    <div id="mixer"><div class="empty">Add layers to use the mixer.</div></div>
+  </section>
+
+  <section>
+    <h2><span class="step">4</span> Final mix</h2>
+    <p class="hint">Renders what the mixer is set to: muted layers left out, each layer raw or polished as chosen, with your volume and pan. The song-level pass then makes room for the vocal, glues the mix and sets streaming loudness (−14 LUFS).</p>
+    <div class="row">
+      <button id="render" class="primary" disabled>Render final mix</button>
       <span id="progress" class="progress"></span>
     </div>
     <div id="results" hidden>
       <div class="row" style="margin-top:16px">
-        <button id="play">▶ Play</button>
-        <div class="ab"><button id="ab-raw">Raw</button><button id="ab-pol" class="on">Polished</button></div>
-        <span class="hint" style="margin:0">Switch while playing to compare</span>
+        <button id="play-final">▶ Play final mix</button>
+        <div class="ab"><button id="ab-raw">Unprocessed</button><button id="ab-pol" class="on">Final</button></div>
+        <span class="hint" style="margin:0">Switch while playing to compare (loudness-matched)</span>
       </div>
       <canvas id="wave" width="900" height="70"></canvas>
       <div class="stats" id="stats"></div>
