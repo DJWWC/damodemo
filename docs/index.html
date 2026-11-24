@@ -81,6 +81,10 @@
   .transport[hidden] { display: none; }
   .transport button.play { min-width: 92px; font-weight: 600; }
   .transport input[type=range] { flex: 1; accent-color: var(--accent); }
+  .fmt { font-size: 13px; color: var(--muted); display: flex; gap: 4px; align-items: center; white-space: nowrap; }
+  .fmt select { padding: 5px 6px; font-size: 13px; max-width: 170px; }
+  .export-status { position: sticky; top: 78px; z-index: 9; font-size: 12px; color: var(--muted); text-align: right; min-height: 0; padding: 0 4px; }
+  .export-status:empty { display: none; }
   .time { font-family: var(--mono); font-size: 13px; color: var(--muted); min-width: 92px; text-align: right; }
   /* layer cards */
   .status { font-size: 12px; padding: 2px 9px; border-radius: 999px; background: var(--soft); color: var(--muted); }
@@ -211,7 +215,9 @@
     <button class="play primary" id="play">▶ Play</button>
     <input type="range" id="seek" min="0" max="1000" value="0" aria-label="Position">
     <span class="time" id="time">0:00 / 0:00</span>
+    <label class="fmt" title="Format for every download on this page">⬇ <select id="fmt" aria-label="Download format"></select></label>
   </div>
+  <div id="export-status" class="export-status" aria-live="polite"></div>
 
   <section>
     <h2><span class="step">1</span> Layers</h2>
@@ -250,6 +256,7 @@
       <button id="polish-all">Polish all unpolished layers</button>
       <button class="small" id="all-raw">All raw</button>
       <button class="small" id="all-pol">All polished</button>
+      <button class="small" id="export-layers" title="Every layer, as chosen in the mixer, lined up from 0:00">⬇ All layers (ZIP)</button>
       <span id="mix-progress" class="progress"></span>
     </div>
     <div id="mixer"><div class="empty">Add layers to use the mixer.</div></div>
@@ -276,7 +283,7 @@
   </section>
 
   <footer>
-    Prototype · prompt interpreter v<span id="ver"></span>. Vocal tuning isn't in the browser version yet. Source: <a href="https://github.com/DJWWC/damodemo">github.com/DJWWC/damodemo</a>
+    Prototype · prompt interpreter v<span id="ver"></span>. Vocal tuning isn't in the browser version yet. Source: <a href="https://github.com/DJWWC/damodemo">github.com/DJWWC/damodemo</a>. MP3 encoding uses <a href="https://lame.sourceforge.io" target="_blank" rel="noopener">LAME</a> (lamejs, LGPL).
   </footer>
 </main>
 <script type="module" src="app.js"></script>

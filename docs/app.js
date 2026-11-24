@@ -1,9 +1,10 @@
 import { PARAMS, SOUND_TYPES, PRESETS, defaultSettings } from "./settings.js";
 import { interpret, INTERPRETER_VERSION } from "./interpret.js";
-import { SR, encodeWav, lufs } from "./engine.js";
+import { SR, lufs } from "./engine.js";
 import { demoGuitar, demoVocal } from "./demo.js";
 import * as C from "./clips.js";
 import { createTimeline } from "./timeline.js";
+import { FORMATS, encode, zip, padTo } from "./export.js";
 
 const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;");
@@ -210,7 +211,8 @@ function renderLayers() {
         <span class="status ${cls}">${label}</span>
         <button class="small ${cls === "ok" ? "" : "primary"}" data-act="polish" ${l.busy ? "disabled" : ""}>${l.polished ? "Re-polish" : "Polish this layer"}</button>
         <button class="small" data-act="solo-play" title="Play just this layer">${player.playing && soloPreview === l ? "■ Stop" : "▶ Play this layer"}</button>
-        ${l.polished ? '<button class="small" data-act="dl">⬇ WAV</button>' : ""}
+        <button class="small" data-act="dl-raw" title="Download this layer as arranged (unpolished), lined up from 0:00">⬇ Arranged</button>
+        ${l.polished && !editedSincePolish(l) ? '<button class="small" data-act="dl-pol" title="Download the polished layer, lined up from 0:00">⬇ Polished</button>' : ""}
       </div>
       <div class="prompt-row">
         <input type="text" placeholder="Describe changes for ${esc(l.name)}: e.g. warmer, less nasal, tighter, drier" data-k="prompt">
@@ -242,7 +244,8 @@ function renderLayers() {
       if (act === "del") { stopPlayback(); timeline.dropLayer(l); state.layers.splice(state.layers.indexOf(l), 1); invalidateAnalysis(); renderAll(); background(); }
       if (act === "first") { stopPlayback(); state.layers.splice(state.layers.indexOf(l), 1); state.layers.unshift(l); invalidateAnalysis(); renderAll(); background(); }
       if (act === "solo-play") togglePreview(l);
-      if (act === "dl") download(encodeWav([l.polished]), `${l.name}_polished.wav`);
+      if (act === "dl-raw") exportAudio([padTo(l.raw, songSamples())], `damodemo_${l.name}_arranged`);
+      if (act === "dl-pol") exportAudio([padTo(l.polished, songSamples())], `damodemo_${l.name}_polished`);
     }));
     const knobs = el.querySelector(".knobs");
     for (const [p, [lo, hi, desc]] of Object.entries(PARAMS)) {
@@ -374,6 +377,10 @@ function renderMixer() {
   box.appendChild(grid);
 }
 const panLabel = (p) => (Math.abs(p) < 0.025 ? "C" : `${Math.round(Math.abs(p) * 100)}${p < 0 ? "L" : "R"}`);
+$("fmt").innerHTML = Object.entries(FORMATS).map(([k, v]) => `<option value="${k}">${v.label}</option>`).join("");
+try { const saved = localStorage.getItem("dd-format"); if (saved && FORMATS[saved]) $("fmt").value = saved; } catch {}
+$("fmt").onchange = () => { try { localStorage.setItem("dd-format", $("fmt").value); } catch {} exportStatus(`Downloads will be ${FORMATS[$("fmt").value].label}`); };
+$("export-layers").onclick = () => exportBundle(false);
 $("all-raw").onclick = () => { state.layers.forEach((l) => (l.use = "raw")); applyLiveMix(); renderMixer(); };
 $("all-pol").onclick = () => { state.layers.forEach((l) => l.polished && (l.use = "pol")); applyLiveMix(); renderMixer(); };
 $("polish-all").onclick = async () => {
@@ -538,16 +545,62 @@ function showFinal() {
   $("log").textContent = JSON.stringify(log, (k, v) => (k === "bands_db" ? undefined : v), 2);
   const dl = $("downloads");
   dl.innerHTML = "";
-  const link = (label, make, file) => { const b = document.createElement("button"); b.className = "small"; b.textContent = label; b.onclick = () => download(make(), file); dl.appendChild(b); };
-  link("⬇ Final mix (WAV)", () => encodeWav(f.stereo), "song_mix.wav");
-  link("⬇ Processing log", () => JSON.stringify(log, null, 2), "processing_log.json");
+  const fb = (label, fn, title) => { const b = document.createElement("button"); b.className = "small"; b.textContent = label; b.title = title || ""; b.onclick = fn; dl.appendChild(b); };
+  fb("⬇ Final mix", () => exportAudio(f.stereo, "damodemo_final_mix"), "Stereo final mix in the chosen format");
+  fb("⬇ Final mix + all layers (ZIP)", () => exportBundle(true), "Final mix, every layer lined up from 0:00, and the processing log");
+  fb("⬇ Processing log", () => download(JSON.stringify(log, null, 2), "damodemo_processing_log.json"));
   drawWave(f.stereo[0]);
 }
 function download(data, file) {
+  const ext = file.split(".").pop(), types = { json: "application/json", txt: "text/plain", zip: "application/zip", wav: "audio/wav", aif: "audio/aiff", mp3: "audio/mpeg" };
   const a = document.createElement("a");
-  a.href = URL.createObjectURL(new Blob([data], { type: file.endsWith(".json") ? "application/json" : "audio/wav" }));
-  a.download = file; a.click();
-  setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+  a.href = URL.createObjectURL(new Blob([data], { type: types[ext] || "application/octet-stream" }));
+  a.download = file; document.body.appendChild(a); a.click(); a.remove();
+  setTimeout(() => URL.revokeObjectURL(a.href), 20000);
+}
+
+// ------------------------------------------------------------------ exports (any stage, any format)
+const songSamples = () => Math.max(0, ...state.layers.map((l) => l.raw.length));
+const fmtSel = () => $("fmt").value;
+function exportStatus(msg) { $("export-status").textContent = msg; }
+async function exportAudio(channels, base) {
+  const f = fmtSel(), fmt = FORMATS[f];
+  exportStatus(`Encoding ${fmt.label}…`);
+  try {
+    const bytes = await encode(channels, SR, f);
+    download(bytes, `${base}.${fmt.ext}`);
+    exportStatus(`Saved ${base}.${fmt.ext} (${(bytes.length / 1048576).toFixed(1)} MB)`);
+  } catch (err) { exportStatus(`Couldn't encode: ${err.message}`); }
+}
+/** ZIP of every layer (as currently chosen in the mixer), lined up from 0:00, plus the final mix if rendered. */
+async function exportBundle(withFinal) {
+  if (!state.layers.length) return;
+  const f = fmtSel(), fmt = FORMATS[f], n = songSamples(), files = [];
+  try {
+    for (const [i, l] of state.layers.entries()) {
+      const use = effectiveUse(l), audio = use === "pol" ? l.polished : l.raw;
+      exportStatus(`Encoding ${l.name} (${i + 1}/${state.layers.length}) as ${fmt.label}…`);
+      files.push({ name: `${String(i + 1).padStart(2, "0")}_${l.name}_${use === "pol" ? "polished" : "arranged"}.${fmt.ext}`, data: await encode([padTo(audio, n)], SR, f) });
+    }
+    if (withFinal && state.final) {
+      exportStatus(`Encoding the final mix…`);
+      files.push({ name: `00_final_mix.${fmt.ext}`, data: await encode(state.final.stereo, SR, f) });
+      files.push({ name: "processing_log.json", data: $("log").textContent });
+    }
+    files.push({ name: "README.txt", data: [
+      "DamoDemo export",
+      "",
+      `Format: ${fmt.label}, 44.1 kHz. Layers are mono and all start at 0:00 and run the full song length,`,
+      "so they line up when imported into Logic, Pro Tools, Ableton, Cubase, GarageBand etc.",
+      "Layer files are dry: mixer volume and pan are not applied to them (only to the final mix).",
+      "Each layer is the version selected in the mixer: 'polished' or 'arranged' (edited but not polished).",
+      `Tempo: ${state.analysis ? state.analysis.tempo.toFixed(1) + " BPM" : "n/a"}${state.analysis ? ", key: " + state.analysis.key : ""}`,
+    ].join("\n") });
+    exportStatus("Building the ZIP…");
+    const z = zip(files);
+    download(z, `damodemo_${withFinal && state.final ? "mix_and_layers" : "layers"}.zip`);
+    exportStatus(`Saved ZIP with ${files.length - 1} file(s) (${(z.length / 1048576).toFixed(1)} MB)`);
+  } catch (err) { exportStatus(`Couldn't export: ${err.message}`); }
 }
 function drawWave(y) {
   const c = $("wave"), g = c.getContext("2d"), w = c.width, h = c.height, step = Math.ceil(y.length / w);

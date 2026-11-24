@@ -73,7 +73,24 @@ Work one layer at a time:
    and **volume** and **pan** sliders. Space bar plays and stops.
 5. **Final mix:** renders exactly what the mixer is set to (muted layers left
    out, raw or polished as chosen) through the song-level pass. You can compare
-   it with the unprocessed mix and download the WAV and processing log.
+   it with the unprocessed mix and download it.
+
+### Downloads (any stage, for other software)
+
+Pick the format once from **⬇** in the play bar: **WAV** 24-bit (studio),
+16-bit (CD) or 32-bit float, **AIFF** 24-bit, or **MP3** 320 / 192 / 128 kbps.
+All files are 44.1 kHz.
+
+| Where | Download |
+|---|---|
+| Each layer card | **⬇ Arranged** (edited, unpolished) and **⬇ Polished** |
+| Mixer | **⬇ All layers (ZIP)**: every layer, as chosen in the mixer |
+| Final mix | **⬇ Final mix** (stereo), **⬇ Final mix + all layers (ZIP)**, processing log |
+
+Every layer file is mono, **starts at 0:00 and runs the full song length**, so
+the files line up when dropped into Logic, Pro Tools, Ableton, Cubase or
+GarageBand. Layer files are dry: mixer volume and pan only apply to the final
+mix. Each ZIP includes a README with the tempo and key.
 
 The browser version does all the processing on your own device in
 JavaScript (`docs/`). Your audio is never uploaded. It has everything in the
@@ -197,6 +214,8 @@ never is.
 | `docs/clips.js` | Non-destructive editing: clips, split / cut / copy / paste / duplicate / move, flatten with anti-click fades, snap search |
 | `docs/timeline.js` | Arrange timeline: lanes, waveforms, grid, touch gestures (pinch, two-finger scroll), tools, snapping |
 | `tests/clips_test.mjs` | Editing tests: `node tests/clips_test.mjs` |
+| `docs/export.js`, `docs/mp3worker.js` | Downloads: WAV / AIFF writers, MP3 (lamejs, in a background worker), ZIP |
+| `tests/export_test.mjs` | Writes test WAV / AIFF / ZIP files: `node tests/export_test.mjs /tmp/exp` |
 | `tests/engine_test.mjs` | Runs the browser engine end to end in Node: `node tests/engine_test.mjs /tmp/out` |
 | `tests/interpret_test.mjs` | Phrase tests for the interpreter: `node tests/interpret_test.mjs` |
 | `tools/build_dictionary.mjs` | Regenerates `PROMPT_DICTIONARY.md` from `docs/interpret.js` |
@@ -216,6 +235,9 @@ never is.
 - Drums and keys aren't supported yet.
 
 ## Licences
+
+MP3 export uses [LAME](https://lame.sourceforge.io) through lamejs
+(LGPL-3.0, unmodified, in `docs/vendor/`, licence note alongside).
 
 The prototype depends on open-source libraries, including Spotify's
 `pedalboard` (GPL-3.0), `librosa` (ISC), `noisereduce` (MIT) and `pyloudnorm`

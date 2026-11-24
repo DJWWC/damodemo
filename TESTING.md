@@ -91,7 +91,9 @@ Undo everything before section 4 (or reload the page and re-add the files).
 | 5.2 | **Render final mix** | Finishes. Shows tempo/key, layers used, −14 LUFS | | |
 | 5.3 | Was the detected **tempo and key** right? | Tempo ____ (actual ____), key ____ (actual ____) | | |
 | 5.4 | **▶ Play final mix**, switch **Unprocessed / Final** | Final sounds more balanced and finished, at similar loudness | | |
-| 5.5 | **⬇ Final mix (WAV)** | File saves to Files / Downloads and plays in another app | | |
+| 5.5 | Choose a format from **⬇** in the play bar, then **⬇ Final mix**. Try WAV 24-bit and MP3 | File saves to Files / Downloads and plays in another app | | |
+| 5.5b | **⬇ Final mix + all layers (ZIP)** → open it in Files (tap to unzip) | Final mix, one file per layer, log and README | | |
+| 5.5c | Import the layer files into GarageBand (or Logic / another DAW) | All layers line up from the start, in time with each other | | |
 | 5.6 | Does the vocal sit well over the guitar in the final mix? | Clear, not buried, not too loud | | |
 
 ---
