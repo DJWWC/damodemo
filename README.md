@@ -32,11 +32,13 @@ guide is in the **How to use** tab on the right edge of the page.
    ("warmer", "less nasal", "tighter"), tap *Polish this layer*, listen, and
    adjust and *Re-polish* as needed.
 6. **Balance the mix** (section 4): Raw / Polished per layer, volume, pan.
-7. **Render the final mix** (section 5), compare it with the unprocessed mix,
-   and download the WAV.
+   Optionally tap 🎵 Detect notes for chords, melody and MIDI.
+7. **Render the final mix** (section 5) and compare it with the unprocessed mix.
+8. **Download** at any stage in WAV, AIFF or MP3 (format picker in the play
+   bar): single layers, all layers as a ZIP, the final mix, and MIDI.
 
-Nothing is saved between visits yet, so download your mix before closing the
-page.
+Nothing is saved between visits yet, so download what you want to keep before
+closing the page.
 
 **Testing:** a step-by-step real-world test plan for iPad is in
 [TESTING.md](TESTING.md).
