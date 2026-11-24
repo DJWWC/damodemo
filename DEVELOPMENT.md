@@ -76,8 +76,9 @@ descriptors), never audio.
   hits. Moving a clip snaps its start or its first hit, whichever is nearer.
 - Any layer can be the timing master (*make timing master* moves it first).
   Tempo detection needs a rhythmic part: on the demo the vocal as master gave
-  112 BPM instead of 90. Possible improvement: suggest or auto-pick the most
-  rhythmic layer, or let the user type the tempo.
+  112 BPM instead of 90. **Decision (24 Nov 2026): keep this manual.** The
+  user chooses the timing master; no auto-pick for now. (Ideas parked for
+  later: suggest the most rhythmic layer, or let the user type the tempo.)
 - The beat grid comes from the timing master's **original** recording, so it
   stays fixed while you edit.
 - Edit then polish: polishing works on the edited audio. Editing a polished
