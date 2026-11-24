@@ -13,6 +13,31 @@ An automatic producer/engineer for raw home recordings. You record each part
 4. Runs a **song-level pass**: makes room for the vocal, balances the layers
    and brings the mix to streaming loudness (-14 LUFS).
 
+## How to use (quick start)
+
+Open **https://djwwc.github.io/layerpolish/** on an iPad or computer. The same
+guide is in the **How to use** tab on the right edge of the page.
+
+1. **Record your takes:** one instrument or vocal per recording, same tempo
+   (a click helps), all starting from the same moment, with about a second
+   of silence at the start. Tune guitars first. On iPad, record in Voice
+   Memos or GarageBand and save the files to the Files app.
+2. **Add your layers** (section 1), or *Load demo takes* to try it. Check each
+   layer's type. The first layer is the timing master, so use your best-timed
+   part.
+3. **Listen** with the play bar at the top, and the mixer's Mute / Solo.
+4. **Arrange, if needed** (section 2): split, cut, copy, paste, duplicate,
+   move, with snapping and undo. Arrange before polishing.
+5. **Polish each layer** (section 1): type requests in the layer's box
+   ("warmer", "less nasal", "tighter"), tap *Polish this layer*, listen, and
+   adjust and *Re-polish* as needed.
+6. **Balance the mix** (section 4): Raw / Polished per layer, volume, pan.
+7. **Render the final mix** (section 5), compare it with the unprocessed mix,
+   and download the WAV.
+
+Nothing is saved between visits yet, so download your mix before closing the
+page.
+
 ## Try it in your browser
 
 **https://djwwc.github.io/layerpolish/**

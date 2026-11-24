@@ -141,6 +141,28 @@
     .knob { grid-template-columns: 110px 1fr 44px; }
   }
   button, .chip { touch-action: manipulation; }
+
+  /* how-to guide: tab on the right edge, slide-in panel */
+  .howto-tab { position: fixed; right: 0; top: 50%; transform: translateY(-50%); z-index: 30;
+    writing-mode: vertical-rl; background: var(--accent); color: var(--accent-ink); border: 0; border-radius: 8px 0 0 8px;
+    padding: 14px 8px; font-weight: 600; font-size: 14px; box-shadow: -2px 2px 10px rgba(0,0,0,.15); min-height: 0; }
+  .howto-tab[aria-expanded="true"] { display: none; }
+  .howto-panel { position: fixed; top: 0; right: 0; bottom: 0; width: min(400px, 92vw); z-index: 40; background: var(--panel);
+    border-left: 1px solid var(--line); box-shadow: -8px 0 24px rgba(0,0,0,.18); overflow-y: auto; -webkit-overflow-scrolling: touch;
+    padding: 16px 20px 40px; transform: translateX(105%); transition: transform .22s ease; }
+  .howto-panel.open { transform: translateX(0); }
+  .howto-backdrop { position: fixed; inset: 0; z-index: 35; background: rgba(0,0,0,.15); display: none; }
+  .howto-backdrop.open { display: block; }
+  .howto-head { display: flex; justify-content: space-between; align-items: center; position: sticky; top: -16px; background: var(--panel); padding: 4px 0 8px; }
+  .howto-head h2 { margin: 0; font-size: 17px; }
+  .howto-close { font-size: 20px; line-height: 1; padding: 6px 12px; }
+  .howto-panel ol { margin: 6px 0 0; padding-left: 22px; font-size: 14px; }
+  .howto-panel ol > li { margin-bottom: 10px; }
+  .howto-panel ol > li > b:first-child { color: var(--accent); }
+  .howto-panel ul { margin: 4px 0 0; padding-left: 16px; color: var(--muted); font-size: 13px; }
+  .howto-panel .tips { margin-top: 12px; padding: 10px 12px; background: var(--soft); border-radius: 8px; font-size: 13px; }
+  .howto-panel .tips ul { color: var(--ink); }
+  .howto-panel a { color: var(--accent); }
 </style>
 </head>
 <body>
@@ -150,6 +172,40 @@
     <p>Polish your own recordings one layer at a time: clean up noise, tighten timing, shape the tone. Then listen to the layers together, balance them, and render the song. Adjust it in plain English.</p>
     <div class="badge">🔒 <span>Runs entirely in your browser. <b>Your audio is never uploaded.</b> Nothing is generated: every sound is yours.</span></div>
   </header>
+
+
+  <button class="howto-tab" id="howto-tab" aria-controls="howto" aria-expanded="false">How to use</button>
+  <div class="howto-backdrop" id="howto-backdrop"></div>
+  <aside class="howto-panel" id="howto" aria-label="How to use LayerPolish" aria-hidden="true">
+    <div class="howto-head"><h2>How to use LayerPolish</h2><button class="howto-close" id="howto-close" aria-label="Close">×</button></div>
+    <ol>
+      <li><b>Record your takes.</b> One instrument or vocal per recording, all at the same tempo (a click track helps), all starting from the same moment.
+        <ul><li>Leave about a second of silence at the start of each take, so the noise clean-up can learn your room.</li>
+        <li>Tune your guitar first: tuning correction is for vocals only, and isn't in this browser version yet.</li>
+        <li>On iPad: record in Voice Memos or GarageBand, then save or share the files to the Files app.</li></ul></li>
+      <li><b>Add your layers</b> (section 1). Tap <i>+ Add audio files</i>, or <i>Load demo takes</i> to try it first.
+        <ul><li>Check each layer's type (vocal, acoustic guitar…). It decides how the layer is polished.</li>
+        <li>The first layer is the <i>timing master</i>: its tempo sets the beat grid. Use your best-timed part.</li></ul></li>
+      <li><b>Listen.</b> Press <i>▶ Play</i> in the bar at the top (it stays there as you scroll). Use the mixer's <b>M</b> (mute) and <b>S</b> (solo), or <i>▶ Play this layer</i> on a card.</li>
+      <li><b>Arrange, if needed</b> (section 2). Tidy and rearrange before polishing.
+        <ul><li><i>Move</i> tool: tap a part to select it, drag to move it. <i>Select</i> tool: drag across a lane to select a section.</li>
+        <li>Then use Split (at the playhead), Cut, Copy, Paste (at the playhead), Duplicate or Delete. Undo always works.</li>
+        <li>Snap lines parts up with the beat or with another track's hits. Pinch to zoom, two fingers to scroll.</li></ul></li>
+      <li><b>Polish each layer</b> (section 1, on each card).
+        <ul><li>Pick a preset in section 3 if you like, then type what you want in the layer's box: “warmer”, “less nasal”, “tighter”, “drier”.</li>
+        <li>Tap <i>Polish this layer</i> and listen. Not right? Make another request and <i>Re-polish</i>. The status shows when a layer needs re-polishing.</li></ul></li>
+      <li><b>Balance the mix</b> (section 4). Switch each layer between <i>Raw</i> and <i>Polished</i> while it plays to compare, and set volume and pan with the sliders.</li>
+      <li><b>Render the final mix</b> (section 5). It uses exactly what the mixer is set to, then balances the song and sets streaming loudness. Compare it with the unprocessed mix, then download the WAV.</li>
+    </ol>
+    <div class="tips"><b>Good to know</b>
+      <ul>
+        <li>Everything runs on your device. Your recordings are never uploaded, and nothing is generated: every sound is your own playing.</li>
+        <li>Editing never changes your original recordings. Order: arrange first, then polish.</li>
+        <li>Not sure what to type? <a href="https://github.com/DJWWC/layerpolish/blob/main/PROMPT_DICTIONARY.md" target="_blank" rel="noopener">See every phrase it understands</a>. It also tells you when it can't do something.</li>
+        <li>No sound on iPad? Check the volume and that the iPad isn't muted (Control Centre), then press Play again.</li>
+        <li>Nothing is saved between visits yet, so download your final mix before closing the page.</li>
+      </ul></div>
+  </aside>
 
   <div class="transport" id="transport" hidden>
     <button class="play primary" id="play">▶ Play</button>

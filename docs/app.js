@@ -610,5 +610,14 @@ const timeline = createTimeline($("timeline"), {
 });
 
 $("ver").textContent = INTERPRETER_VERSION;
+// "How to use" side panel
+function setGuide(open) {
+  $("howto").classList.toggle("open", open); $("howto-backdrop").classList.toggle("open", open);
+  $("howto").setAttribute("aria-hidden", String(!open)); $("howto-tab").setAttribute("aria-expanded", String(open));
+}
+$("howto-tab").onclick = () => setGuide(true);
+$("howto-close").onclick = () => setGuide(false);
+$("howto-backdrop").onclick = () => setGuide(false);
+document.addEventListener("keydown", (e) => { if (e.key === "Escape") setGuide(false); });
 renderAll();
 window.layerpolish = { state, timeline, history };   // handy for debugging in the browser console
