@@ -1,4 +1,4 @@
-"""Plain-English prompt -> knob changes.
+"""Plain-English prompt -> audio adjustment changes.
 
 The assistant is given ONLY: the user's request, the current settings, and
 numeric descriptors of each layer (loudness, band balance, timing/pitch

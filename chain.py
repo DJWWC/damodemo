@@ -1,7 +1,7 @@
 """Per-sound-type processing chains and presets.
 
 Each layer has a small set of named, range-limited parameters. These are
-the only 'knobs' that presets, the user and the AI assistant can turn.
+the only audio adjustments that presets, the user and the AI assistant can change.
 """
 import copy
 import numpy as np

@@ -270,7 +270,7 @@ function renderLayers() {
       <ul class="changes">${l.history.slice(0, 3).map(historyItem).join("")}</ul>
       ${notesSummary(l)}
       ${rep}
-      <details class="adj" ${l.knobsOpen ? "open" : ""}><summary>Audio Adjustments</summary>
+      <details class="adj" ${l.adjOpen ? "open" : ""}><summary>Audio Adjustments</summary>
         <p class="hint" style="margin:6px 0 0">Presets and requests move these. Fine-tune by hand, then <i>Re-polish</i>. Highlighted = changed from the preset. Mix settings apply straight away.</p>
         <div class="adj-groups"></div><div style="margin-top:8px"><button class="small" data-act="reset">Reset to preset</button></div></details>`;
     const nameIn = el.querySelector('[data-k="name"]');
@@ -288,7 +288,7 @@ function renderLayers() {
       renderAll();
     };
     pIn.onkeydown = (e) => { if (e.key === "Enter") applyLayer(); };
-    el.querySelector("details.adj").ontoggle = (e) => { l.knobsOpen = e.target.open; };
+    el.querySelector("details.adj").ontoggle = (e) => { l.adjOpen = e.target.open; };
     el.querySelectorAll("button[data-act]").forEach((b) => (b.onclick = () => {
       const act = b.dataset.act;
       if (act === "apply") applyLayer();
@@ -312,7 +312,7 @@ function renderLayers() {
       for (const p of ps) {
         const [lo, hi, desc] = PARAMS[p], v = l.settings[p], changed = Math.abs(v - l.baseline[p]) > 1e-6;
         const k = document.createElement("label");
-        k.className = "knob" + (changed ? " changed" : "");
+        k.className = "adj-row" + (changed ? " changed" : "");
         k.title = desc;
         const step = hi - lo > 20 ? 1 : (hi - lo) / 100;
         k.innerHTML = `<span>${LABELS[p][0]}</span><input type="range" min="${lo}" max="${hi}" step="${step}" value="${v}" aria-label="${esc(l.name)} ${LABELS[p][0]}"><span>${formatSetting(p, v)}</span>`;

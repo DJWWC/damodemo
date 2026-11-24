@@ -1,4 +1,4 @@
-// Plain-English request -> knob changes. Offline, free, no AI.
+// Plain-English request -> audio adjustment changes. Offline, free, no AI.
 //
 // Understands:
 //  - qualities you want more of ("warmer", "brighter") and problems to fix
@@ -6,11 +6,11 @@
 //  - modifiers: "less", "not so", "too" (inverts a quality), "slightly",
 //    "a bit" (half step), "much", "a lot", "way" (bigger step)
 //  - removal: "no reverb", "remove the compression", "reset"
-//  - character words that move several knobs ("vintage", "dreamy", "lo-fi")
+//  - character words that move several adjustments ("vintage", "dreamy", "lo-fi")
 //  - which layer: names or types, "and"/"," lists, "everything"
 //  - things it can't do yet, and things it never will (adding new parts)
 //
-// Every change is a knob move on the user's own audio; nothing is generated.
+// Every change is an adjustment to the user's own audio; nothing is generated.
 
 import { PARAMS, clamp } from "./settings.js";
 
