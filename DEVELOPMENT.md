@@ -33,10 +33,10 @@ descriptors), never audio.
   messages for unsupported requests. It's free and works offline. The full
   phrase list, with version history, is in **`PROMPT_DICTIONARY.md`**, which is
   generated from the code.
-- Knobs: 17 per layer, including `nasal_db`, `width` and `level_db` (added with
+- Audio adjustments: 17 per layer (grouped in the UI as Clean-up / EQ / Dynamics / Effects / Mix), including `nasal_db`, `width` and `level_db` (added with
   interpreter v2, in both versions).
 - The Python version's offline rules (`assistant.py` `ask_offline`) are still
-  v1 keyword rules. Its Claude path (`ask_claude`) can use all 17 knobs if
+  v1 keyword rules. Its Claude path (`ask_claude`) can use all 17 adjustments if
   `ANTHROPIC_API_KEY` is set.
 
 ### Updating the interpreter
@@ -106,9 +106,9 @@ Not built yet. Proposed after real-world testing (see `TESTING.md`).
 
 **What it does:** an **Auto-polish** button per layer (and for all layers)
 that measures the layer, compares it with target ranges for its sound type,
-and moves the existing knobs to close the gap. A **strength slider (0–100%)**
-works like a photo filter's intensity. The changes are listed and shown on the
-knobs, so the user can override any of them by hand or with a request.
+and moves the existing audio adjustments to close the gap. A **strength slider (0–100%)**
+works like a photo filter's intensity. The changes are listed and shown in the
+Audio Adjustments panel, so the user can override any of them by hand or with a request.
 
 **How it works (rule-based v1, free, on-device):**
 1. Targets per sound type: tonal balance (low / low-mid / mid / presence /
@@ -116,7 +116,7 @@ knobs, so the user can override any of them by hand or with a request.
    dynamics (how much compression), noise floor, timing spread, and level
    relative to the other layers.
 2. Measure the layer (most of this already exists in the before/after reports).
-3. Map each gap to a capped knob move, e.g. low-mids +3 dB over target →
+3. Map each gap to a capped adjustment, e.g. low-mids +3 dB over target →
    boxiness −3 dB; too dynamic → more compression; hiss → more noise clean-up.
 4. Process, re-measure, adjust: 2–3 rounds until within target.
 5. Song level: reduce clashes between layers and balance levels (the final
@@ -146,11 +146,11 @@ recorded.
 
 **Effort:** rule-based v1 with the Auto button, strength slider and
 measure-and-adjust loop is about 1–1.5 developer days, reusing the existing
-measurements and knobs.
+measurements and adjustments.
 
 ## AI roadmap
 
-### Level 1: AI engineer that sets the knobs (easy, ~1 day)
+### Level 1: AI engineer that sets the audio adjustments (easy, ~1 day)
 
 **What it does:** the user types anything ("the vocal sounds nasal and far
 away", "make the chorus guitar sit back a bit") and Claude chooses new values

@@ -24,7 +24,7 @@ This is the free, offline interpreter in the browser version. It matches words a
    - Describing the level as it is (*“the vocal is quiet”*) asks for the opposite (louder). *“make it quieter”* makes it quieter.
 5. **Layer + up/down:** *“vocal up”*, *“guitar down 3 dB”* changes the level (2 dB if no number is given).
 6. Vocals ignore timing requests, since vocals get no timing correction.
-7. Each request is one step. Repeat it to go further. Every value stays within its knob's range (see the end of this file).
+7. Each request is one step. Repeat it to go further. Every value stays within its setting's range (see the end of this file).
 
 ## Qualities: things you want more of
 
@@ -74,7 +74,7 @@ Mentioning these fixes them. “more” or “add” reverses them.
 | **harsh-distorted** | distorted / distorting · fuzzy · crackl… · clipping · overdriven | saturation −3 dB, harshness (6.5 kHz) −1 dB |
 | **too reverby** | washed-out · swimming · reverb soup · too wet · too much reverb / echo · cavernous · bathroom | reverb −10%, room size −0.15 |
 
-## Character words: move several knobs at once
+## Character words: move several settings at once
 
 These behave like qualities, so *“less vintage”* reverses them.
 
@@ -123,9 +123,11 @@ These show a message instead of silently doing nothing.
 | sound(s) like / in the style of / like + a capitalised name (e.g. Like Adele, sounds like Bon Iver) | Sounding like a particular artist needs the Claude version (see DEVELOPMENT.md). For now, describe the sound instead: warmer, drier, brighter… |
 | sound(s) like / in the style of / like + a known artist typed in lower case (ed sheeran, taylor swift, adele, billie eilish, coldplay, the beatles, oasis, radiohead, john mayer, bon iver, phoebe bridgers, nirvana, queen) | Sounding like a particular artist needs the Claude version (see DEVELOPMENT.md). For now, describe the sound instead: warmer, drier, brighter… |
 
-## Knob ranges
+## Audio Adjustments ranges
 
-| Knob | Range | What it is |
+These are the sliders under **Audio Adjustments** on each layer card.
+
+| Setting | Range | What it is |
 |---|---|---|
 | noise clean-up (`denoise`) | 0 to 1 | noise reduction strength |
 | timing correction (`timing_strength`) | 0 to 1 | how far events are pulled to the beat grid (0 = as played) |

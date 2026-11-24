@@ -44,9 +44,12 @@
   .layer .meta { color: var(--muted); font-size: 13px; }
   .master { font-size: 12px; color: var(--accent); font-weight: 600; }
   details summary { cursor: pointer; color: var(--muted); font-size: 13px; margin-top: 8px; }
-  .knobs { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 6px 18px; margin-top: 8px; }
-  .knob { display: grid; grid-template-columns: 120px 1fr 44px; gap: 8px; align-items: center; font-size: 13px; }
-  .knob span:last-child { font-family: var(--mono); text-align: right; color: var(--muted); }
+  .adj-groups { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 10px 22px; margin-top: 8px; }
+  .adj-group { border-top: 1px solid var(--line); padding-top: 6px; }
+  .adj-group h4 { margin: 0 0 4px; font-size: 12px; text-transform: uppercase; letter-spacing: .06em; color: var(--accent); }
+  .adj-group h4 small { text-transform: none; letter-spacing: 0; color: var(--muted); font-weight: 400; }
+  .knob { display: grid; grid-template-columns: 150px 1fr 64px; gap: 8px; align-items: center; font-size: 13px; padding: 2px 0; }
+  .knob span:last-child { font-family: var(--mono); text-align: right; color: var(--muted); font-size: 12px; }
   .knob input { width: 100%; accent-color: var(--accent); }
   .knob.changed span:first-child { color: var(--accent); font-weight: 600; }
   textarea { width: 100%; min-height: 44px; resize: vertical; }
@@ -146,7 +149,7 @@
     .toggle { width: 44px; }
     input[type=range] { height: 32px; }
     .tl-lane { height: 76px; }
-    .knob { grid-template-columns: 110px 1fr 44px; }
+    .knob { grid-template-columns: 140px 1fr 64px; }
   }
   button, .chip { touch-action: manipulation; }
 
@@ -201,6 +204,7 @@
         <li>Snap lines parts up with the beat or with another track's hits. Pinch to zoom, two fingers to scroll.</li></ul></li>
       <li><b>Polish each layer</b> (section 1, on each card).
         <ul><li>Pick a preset in section 3 if you like, then type what you want in the layer's box: “warmer”, “less nasal”, “tighter”, “drier”.</li>
+        <li>To fine-tune by hand, open <i>Audio Adjustments</i> on the card: EQ, dynamics, effects and mix sliders.</li>
         <li>Tap <i>Polish this layer</i> and listen. Not right? Make another request and <i>Re-polish</i>. The status shows when a layer needs re-polishing.</li>
         <li>Tap <i>🎵 Detect notes</i> to see the chords by bar (guitars, bass) or the melody (vocals), shown on the timeline too. Download them as MIDI to use in GarageBand or Logic.</li></ul></li>
       <li><b>Balance the mix</b> (section 4). Switch each layer between <i>Raw</i> and <i>Polished</i> while it plays to compare, and set volume and pan with the sliders.</li>

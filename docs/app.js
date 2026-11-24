@@ -1,4 +1,4 @@
-import { PARAMS, SOUND_TYPES, PRESETS, defaultSettings } from "./settings.js";
+import { PARAMS, SOUND_TYPES, PRESETS, GROUPS, LABELS, formatSetting, defaultSettings } from "./settings.js";
 import { interpret, INTERPRETER_VERSION } from "./interpret.js";
 import { SR, lufs } from "./engine.js";
 import { demoGuitar, demoVocal } from "./demo.js";
@@ -270,7 +270,9 @@ function renderLayers() {
       <ul class="changes">${l.history.slice(0, 3).map(historyItem).join("")}</ul>
       ${notesSummary(l)}
       ${rep}
-      <details ${l.knobsOpen ? "open" : ""}><summary>Knobs (what presets and requests change)</summary><div class="knobs"></div></details>`;
+      <details class="adj" ${l.knobsOpen ? "open" : ""}><summary>Audio Adjustments</summary>
+        <p class="hint" style="margin:6px 0 0">Presets and requests move these. Fine-tune by hand, then <i>Re-polish</i>. Highlighted = changed from the preset. Mix settings apply straight away.</p>
+        <div class="adj-groups"></div><div style="margin-top:8px"><button class="small" data-act="reset">Reset to preset</button></div></details>`;
     const nameIn = el.querySelector('[data-k="name"]');
     nameIn.onchange = () => { l.name = uniqueName(nameIn.value, l); renderAll(); };
     el.querySelector('[data-k="type"]').onchange = (e) => {
@@ -286,7 +288,7 @@ function renderLayers() {
       renderAll();
     };
     pIn.onkeydown = (e) => { if (e.key === "Enter") applyLayer(); };
-    el.querySelector("details").ontoggle = (e) => { l.knobsOpen = e.target.open; };
+    el.querySelector("details.adj").ontoggle = (e) => { l.knobsOpen = e.target.open; };
     el.querySelectorAll("button[data-act]").forEach((b) => (b.onclick = () => {
       const act = b.dataset.act;
       if (act === "apply") applyLayer();
@@ -295,25 +297,33 @@ function renderLayers() {
       if (act === "first") { stopPlayback(); state.layers.splice(state.layers.indexOf(l), 1); state.layers.unshift(l); invalidateAnalysis(); renderAll(); background(); }
       if (act === "solo-play") togglePreview(l);
       if (act === "notes") detectLayerNotes(l);
+      if (act === "reset") { l.settings = { ...l.baseline }; l.history.unshift({ text: "Reset to preset", changes: [], notes: [] }); applyLiveMix(); renderAll(); }
       if (act === "dl-midi") download(toMidi([{ name: l.name, type: l.type, notes: l.notes }], state.analysis?.tempo || 120), `damodemo_${l.name}_notes.mid`);
       if (act === "dl-raw") exportAudio([padTo(l.raw, songSamples())], `damodemo_${l.name}_arranged`);
       if (act === "dl-pol") exportAudio([padTo(l.polished, songSamples())], `damodemo_${l.name}_polished`);
     }));
-    const knobs = el.querySelector(".knobs");
-    for (const [p, [lo, hi, desc]] of Object.entries(PARAMS)) {
-      if (p === "timing_strength" && l.type === "vocal") continue;
-      const v = l.settings[p], changed = Math.abs(v - l.baseline[p]) > 1e-6;
-      const k = document.createElement("label");
-      k.className = "knob" + (changed ? " changed" : "");
-      k.title = desc + (MIX_PARAMS.has(p) ? " (mix setting: no re-polish needed)" : "");
-      const step = hi - lo > 20 ? 1 : (hi - lo) / 100;
-      k.innerHTML = `<span>${p.replace(/_/g, " ")}</span><input type="range" min="${lo}" max="${hi}" step="${step}" value="${v}"><span>${fmt(v)}</span>`;
-      const input = k.querySelector("input");
-      input.oninput = () => {
-        l.settings[p] = +input.value; k.lastChild.textContent = fmt(+input.value); k.classList.add("changed");
-        if (MIX_PARAMS.has(p)) { applyLiveMix(); renderMixer(); } else refreshStatus(el, l);
-      };
-      knobs.appendChild(k);
+    const groupsBox = el.querySelector(".adj-groups");
+    for (const [title, params] of GROUPS) {
+      const ps = params.filter((p) => !(p === "timing_strength" && l.type === "vocal"));
+      if (!ps.length) continue;
+      const grp = document.createElement("div");
+      grp.className = "adj-group";
+      grp.innerHTML = `<h4>${title}${title === "Mix" ? " <small>(no re-polish needed)</small>" : ""}</h4>`;
+      for (const p of ps) {
+        const [lo, hi, desc] = PARAMS[p], v = l.settings[p], changed = Math.abs(v - l.baseline[p]) > 1e-6;
+        const k = document.createElement("label");
+        k.className = "knob" + (changed ? " changed" : "");
+        k.title = desc;
+        const step = hi - lo > 20 ? 1 : (hi - lo) / 100;
+        k.innerHTML = `<span>${LABELS[p][0]}</span><input type="range" min="${lo}" max="${hi}" step="${step}" value="${v}" aria-label="${esc(l.name)} ${LABELS[p][0]}"><span>${formatSetting(p, v)}</span>`;
+        const input = k.querySelector("input");
+        input.oninput = () => {
+          l.settings[p] = +input.value; k.lastChild.textContent = formatSetting(p, +input.value); k.classList.add("changed");
+          if (MIX_PARAMS.has(p)) { applyLiveMix(); renderMixer(); } else refreshStatus(el, l);
+        };
+        grp.appendChild(k);
+      }
+      groupsBox.appendChild(grp);
     }
     box.appendChild(el);
   });

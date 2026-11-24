@@ -50,7 +50,8 @@ Work one layer at a time:
 
 1. **Layers:** add each take (or load the demo). Each layer card has its own
    **Polish this layer** button, its own request box ("warmer, less nasal"),
-   its settings, and a before/after report. Its status shows *Not polished*,
+   **Audio Adjustments** (sliders grouped as Clean-up, EQ, Dynamics, Effects
+   and Mix, like a studio channel strip), and a before/after report. Its status shows *Not polished*,
    *Polished*, *Changed: re-polish* or *Edited: re-polish*.
 2. **Arrange:** a timeline with one lane per layer. **Split, cut, copy,
    paste, duplicate, delete and move** parts, with **undo/redo**. Parts
@@ -125,7 +126,7 @@ Everything that comes out is **your recording, edited and processed**: slices
 moved in time, notes re-pitched, EQ, compression and so on. Nothing is generated
 or replaced, and no audio is uploaded anywhere. The AI assistant never receives
 audio. It gets measurements (loudness, tonal balance, timing and pitch accuracy)
-and can only turn the existing, range-limited knobs. Each run writes a
+and can only move the existing, range-limited audio adjustments. Each run writes a
 `processing_log.json` that records exactly what was done to each layer.
 
 ## Install
@@ -196,7 +197,7 @@ Separate clauses with `;`.
 simple, but it works with no account and no internet.
 
 **Claude mode:** set an Anthropic API key and the prompts are interpreted by
-Claude through tool calls on the same knobs, with the measurements as context.
+Claude through tool calls on the same audio adjustments, with the measurements as context.
 This handles much freer requests ("the vocal sounds a bit nasal and far away").
 
 ```bash
@@ -223,12 +224,12 @@ never is.
 |---|---|
 | `analysis.py` | Recognition and measurement (tempo grid, key, chords, pitch tracking, loudness, tonal balance) |
 | `repair.py` | Noise reduction, timing tightening, vocal tuning, gap gate |
-| `chain.py` | Sound types, presets, the parameter list (the AI's "knobs") and the effects chain |
-| `assistant.py` | Plain-English prompts to knob changes (Claude tool use, or offline rules) |
+| `chain.py` | Sound types, presets, the list of audio adjustments (what the AI can change) and the effects chain |
+| `assistant.py` | Plain-English prompts to adjustment changes (Claude tool use, or offline rules) |
 | `song.py` | Song-level pass: unmasking, low-end, balance, bus compression, loudness and limiting |
 | `polish.py` | Command-line entry point |
 | `make_demo.py` | Generates sloppy test takes |
-| `docs/` | Browser version, served by GitHub Pages: `engine.js` (all DSP), `settings.js` (sound types, presets, knobs), `app.js` (page), `worker.js` (background processing), `demo.js` (demo takes) |
+| `docs/` | Browser version, served by GitHub Pages: `engine.js` (all DSP), `settings.js` (sound types, presets, audio adjustments and their grouping), `app.js` (page), `worker.js` (background processing), `demo.js` (demo takes) |
 | `docs/interpret.js` | Plain-English interpreter (v2): vocabulary, modifiers, layer targeting |
 | `docs/clips.js` | Non-destructive editing: clips, split / cut / copy / paste / duplicate / move, flatten with anti-click fades, snap search |
 | `docs/timeline.js` | Arrange timeline: lanes, waveforms, grid, touch gestures (pinch, two-finger scroll), tools, snapping |

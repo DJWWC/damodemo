@@ -1,4 +1,4 @@
-// Sound types, presets, the parameter list (the only "knobs") and the
+// Sound types, presets, the parameter list (the only adjustable settings) and the
 // plain-English prompt rules. Mirrors chain.py / assistant.py.
 
 export const PARAMS = {
@@ -44,6 +44,32 @@ export const PRESETS = {
   big_room: { label: "Big room", reverb_mix: 0.12, reverb_size: 0.3, air_db: 1 },
   lofi_warm: { label: "Lo-fi warm", air_db: -3, warmth_db: 2, saturation_db: 4, presence_db: -1 },
 };
+
+// How the settings are grouped and named in the "Audio adjustments" panel (like a studio channel strip)
+export const GROUPS = [
+  ["Clean-up", ["denoise", "timing_strength"]],
+  ["EQ (tone)", ["hpf_hz", "warmth_db", "mud_db", "nasal_db", "presence_db", "harshness_db", "air_db"]],
+  ["Dynamics", ["comp_threshold_db", "comp_ratio"]],
+  ["Effects", ["saturation_db", "reverb_mix", "reverb_size"]],
+  ["Mix", ["level_db", "pan", "width"]],
+];
+export const LABELS = {
+  denoise: ["Noise clean-up", "%"], timing_strength: ["Timing correction", "%"],
+  hpf_hz: ["Low cut", "Hz"], warmth_db: ["Body · 200 Hz", "dB"], mud_db: ["Boxiness · 350 Hz", "dB"],
+  nasal_db: ["Nasal · 1 kHz", "dB"], presence_db: ["Presence · 3 kHz", "dB"], harshness_db: ["Harshness · 6.5 kHz", "dB"],
+  air_db: ["Air · 10 kHz", "dB"], comp_threshold_db: ["Compressor threshold", "dB"], comp_ratio: ["Compressor ratio", ":1"],
+  saturation_db: ["Saturation (drive)", "dB"], reverb_mix: ["Reverb amount", "%"], reverb_size: ["Room size", "%"],
+  level_db: ["Level", "dB"], pan: ["Pan", "pan"], width: ["Stereo width", "%"],
+};
+export function formatSetting(p, v) {
+  const u = LABELS[p]?.[1];
+  if (u === "%") return `${Math.round(v * 100)}%`;
+  if (u === "Hz") return `${Math.round(v)} Hz`;
+  if (u === ":1") return `${(+v).toFixed(1)}:1`;
+  if (u === "pan") return Math.abs(v) < 0.025 ? "C" : `${Math.round(Math.abs(v) * 100)}${v < 0 ? "L" : "R"}`;
+  if (u === "dB") return `${v > 0 ? "+" : ""}${(+v).toFixed(1)} dB`;
+  return String(v);
+}
 
 export function clamp(name, v) {
   const [lo, hi] = PARAMS[name];

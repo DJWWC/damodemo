@@ -98,7 +98,7 @@ L.push(`   - **Bigger step (×1.8):** ${phrases(I.BIG, 99).join(", ").replace(/ 
 L.push(`   - Describing the level as it is (*“the vocal is quiet”*) asks for the opposite (louder). *“make it quieter”* makes it quieter.`);
 L.push(`5. **Layer + up/down:** *“vocal up”*, *“guitar down 3 dB”* changes the level (2 dB if no number is given).`);
 L.push(`6. Vocals ignore timing requests, since vocals get no timing correction.`);
-L.push(`7. Each request is one step. Repeat it to go further. Every value stays within its knob's range (see the end of this file).`, ``);
+L.push(`7. Each request is one step. Repeat it to go further. Every value stays within its setting's range (see the end of this file).`, ``);
 
 const section = (title, kind, blurb) => {
   L.push(`## ${title}`, ``, blurb, ``, `| | Phrases | Effect (one step) |`, `|---|---|---|`);
@@ -107,7 +107,7 @@ const section = (title, kind, blurb) => {
 };
 section("Qualities: things you want more of", "q", "“less”, “not so” and “too” reverse these.");
 section("Problems: things to fix", "p", "Mentioning these fixes them. “more” or “add” reverses them.");
-section("Character words: move several knobs at once", "m", "These behave like qualities, so *“less vintage”* reverses them.");
+section("Character words: move several settings at once", "m", "These behave like qualities, so *“less vintage”* reverses them.");
 
 L.push(`## Set or remove`, ``, `| Phrases | Result |`, `|---|---|`);
 for (const a of I.ABSOLUTE) L.push(`| ${esc(a.show || phrases(a.re, 3).join(" · "))} | ${a.say} |`);
@@ -117,7 +117,7 @@ L.push(`## Requests it recognises but can't do`, ``, `These show a message inste
 for (const u of I.UNSUPPORTED) L.push(`| ${esc(u.show || phrases(u.re, 3).join(" · ").slice(0, 300))} | ${esc(u.say)} |`);
 L.push(``);
 
-L.push(`## Knob ranges`, ``, `| Knob | Range | What it is |`, `|---|---|---|`);
+L.push(`## Audio Adjustments ranges`, ``, `These are the sliders under **Audio Adjustments** on each layer card.`, ``, `| Setting | Range | What it is |`, `|---|---|---|`);
 for (const [p, [lo, hi, d]] of Object.entries(PARAMS)) L.push(`| ${I.LABEL[p]} (\`${p}\`) | ${lo} to ${hi} | ${d} |`);
 L.push(``, `## Example requests`, ``);
 for (const e of ["vocal: warmer and less harsh", "guitar is too bright", "the vocal sounds a bit nasal and muddy", "guitar and vocal: slightly wider", "I can't hear the vocal", "make the whole mix more vintage", "bass down 3 dB", "vocal: no reverb; guitar: tighter", "warmer and brighter on the vocal"])
