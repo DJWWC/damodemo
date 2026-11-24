@@ -13,6 +13,19 @@ An automatic producer/engineer for raw home recordings. You record each part
 4. Runs a **song-level pass**: makes room for the vocal, balances the layers
    and brings the mix to streaming loudness (-14 LUFS).
 
+## Try it in your browser
+
+**https://djwwc.github.io/layerpolish/**
+
+Nothing to install. Add your takes (or load the demo), pick a preset, type
+adjustments in plain English, and click **Polish my song**. You can switch
+between raw and polished while it plays, and download the mix, each polished
+layer and the processing log.
+
+The browser version does all the processing on your own device in
+JavaScript (`docs/`). Your audio is never uploaded. It has everything in the
+Python version except vocal tuning.
+
 ## The ownership principle
 
 Everything that comes out is **your recording, edited and processed**: slices
@@ -122,13 +135,16 @@ never is.
 | `song.py` | Song-level pass: unmasking, low-end, balance, bus compression, loudness and limiting |
 | `polish.py` | Command-line entry point |
 | `make_demo.py` | Generates sloppy test takes |
+| `docs/` | Browser version, served by GitHub Pages: `engine.js` (all DSP), `settings.js` (sound types, presets, knobs, prompt rules), `app.js` (page), `worker.js` (background processing), `demo.js` (demo takes) |
+| `tests/engine_test.mjs` | Runs the browser engine end to end in Node: `node tests/engine_test.mjs /tmp/out` |
 
 ## Known limitations (it's a prototype)
 
 - Offline processing only, with no real-time playback or interface. One run takes
   about 30 seconds for a 25-second song.
-- Timing correction cuts and moves strums. Large corrections on sustained
-  playing can produce audible joins. Lower `timing_strength` ("looser") if so.
+- Timing correction cuts at each attack, moves it, and stretches the decay
+  into any gap. Large corrections on sustained playing can still produce
+  audible joins. Lower `timing_strength` ("looser") if so.
 - Vocal tuning is a basic pitch shift (no formant preservation). Big
   corrections sound processed. It won't match Melodyne or Auto-Tune.
 - Chord recognition is template matching and confuses closely related chords

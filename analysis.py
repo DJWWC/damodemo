@@ -57,7 +57,22 @@ def scale_pitch_classes(key):
 
 
 def detect_onsets(y, sr):
-    return librosa.onset.onset_detect(y=y, sr=sr, units="samples", backtrack=True)
+    """Onset frames from librosa, each refined to the sharpest energy rise
+    (sample-accurate attack) within the surrounding frame."""
+    frames = librosa.onset.onset_detect(y=y, sr=sr, hop_length=512, units="frames")
+    out = []
+    for f in frames:
+        centre = f * 512
+        a, b = max(0, centre - 1536), min(len(y), centre + 1024)
+        blk, step = 128, 64
+        best, best_rise, prev = a, -np.inf, None
+        for s in range(a, b - blk, step):
+            lvl = 10 * np.log10(np.sum(y[s:s + blk] ** 2) + 1e-10)
+            if prev is not None and lvl - prev > best_rise:
+                best_rise, best = lvl - prev, s
+            prev = lvl
+        out.append(best)
+    return np.array(sorted(set(out)), dtype=int)
 
 
 def timing_report(onsets, grid, sr):

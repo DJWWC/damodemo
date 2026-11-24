@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22%3E%3Ctext y=%22.9em%22 font-size=%2290%22%3E%F0%9F%8E%9A%3C/text%3E%3C/svg%3E">
+<title>LayerPolish — polish your own recordings</title>
+<style>
+  :root {
+    --bg: #f6f4ef; --panel: #ffffff; --ink: #1d1b18; --muted: #6b665d; --line: #e3ded4;
+    --accent: #c2572e; --accent-ink: #ffffff; --good: #2f7d4f; --soft: #f1ece3;
+    --radius: 10px; --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root { --bg: #161513; --panel: #201f1c; --ink: #eeeae3; --muted: #a39d92; --line: #34322d;
+      --soft: #2a2925; --accent: #e0754a; }
+  }
+  * { box-sizing: border-box; }
+  body { margin: 0; background: var(--bg); color: var(--ink);
+    font: 15px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+  main { max-width: 960px; margin: 0 auto; padding: 28px 20px 80px; }
+  header h1 { margin: 0; font-size: 28px; letter-spacing: -0.02em; }
+  header p { margin: 6px 0 0; color: var(--muted); max-width: 640px; }
+  .badge { display: inline-flex; gap: 6px; align-items: center; margin-top: 12px; padding: 4px 10px;
+    border-radius: 999px; background: var(--soft); color: var(--muted); font-size: 13px; }
+  .badge b { color: var(--good); }
+  section { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius);
+    padding: 18px 20px; margin-top: 18px; }
+  h2 { font-size: 16px; margin: 0 0 4px; display: flex; gap: 10px; align-items: baseline; }
+  h2 .step { color: var(--accent); font-family: var(--mono); font-size: 13px; }
+  .hint { color: var(--muted); font-size: 13px; margin: 0 0 12px; }
+  button, select, input[type=text], textarea {
+    font: inherit; color: var(--ink); background: var(--panel); border: 1px solid var(--line);
+    border-radius: 8px; padding: 7px 12px; }
+  button { cursor: pointer; }
+  button:hover { border-color: var(--muted); }
+  button.primary { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); font-weight: 600; }
+  button.primary:disabled { opacity: .5; cursor: default; }
+  button.small { padding: 3px 9px; font-size: 13px; }
+  .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+  .layer { border: 1px solid var(--line); border-radius: 8px; padding: 10px 12px; margin-top: 10px; }
+  .layer .row > input[type=text] { width: 140px; }
+  .layer .meta { color: var(--muted); font-size: 13px; }
+  .master { font-size: 12px; color: var(--accent); font-weight: 600; }
+  details summary { cursor: pointer; color: var(--muted); font-size: 13px; margin-top: 8px; }
+  .knobs { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 6px 18px; margin-top: 8px; }
+  .knob { display: grid; grid-template-columns: 120px 1fr 44px; gap: 8px; align-items: center; font-size: 13px; }
+  .knob span:last-child { font-family: var(--mono); text-align: right; color: var(--muted); }
+  .knob input { width: 100%; accent-color: var(--accent); }
+  .knob.changed span:first-child { color: var(--accent); font-weight: 600; }
+  textarea { width: 100%; min-height: 44px; resize: vertical; }
+  .chips { display: flex; gap: 6px; flex-wrap: wrap; margin: 8px 0; }
+  .chip { font-size: 12px; padding: 3px 9px; border-radius: 999px; background: var(--soft); border: 1px solid var(--line); cursor: pointer; }
+  ul.changes { margin: 8px 0 0; padding-left: 18px; font-size: 13px; color: var(--muted); }
+  ul.changes code { font-family: var(--mono); color: var(--ink); }
+  .empty { color: var(--muted); font-size: 14px; padding: 16px; text-align: center; border: 1px dashed var(--line); border-radius: 8px; margin-top: 10px; }
+  .progress { font-size: 14px; color: var(--muted); }
+  .ab { display: flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
+  .ab button { border: 0; border-radius: 0; padding: 8px 16px; }
+  .ab button.on { background: var(--ink); color: var(--bg); }
+  .stats { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 10px; margin-top: 14px; }
+  .stat { background: var(--soft); border-radius: 8px; padding: 10px 12px; }
+  .stat .k { font-size: 12px; color: var(--muted); }
+  .stat .v { font-size: 18px; font-weight: 600; }
+  .stat .v small { font-size: 13px; color: var(--good); font-weight: 600; }
+  pre { background: var(--soft); border-radius: 8px; padding: 10px 12px; font-family: var(--mono); font-size: 12px;
+    white-space: pre-wrap; max-height: 260px; overflow: auto; margin: 10px 0 0; }
+  canvas { width: 100%; height: 70px; display: block; margin-top: 12px; border-radius: 6px; background: var(--soft); }
+  footer { color: var(--muted); font-size: 12px; margin-top: 28px; }
+  footer a { color: inherit; }
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <h1>LayerPolish</h1>
+    <p>Polish your own recordings, one layer at a time: clean up noise, tighten timing, shape the tone, then balance the whole song. Adjust it in plain English.</p>
+    <div class="badge">🔒 <span>Runs entirely in your browser. <b>Your audio is never uploaded.</b> Nothing is generated: every sound is yours.</span></div>
+  </header>
+
+  <section id="s-layers">
+    <h2><span class="step">1</span> Add your layers</h2>
+    <p class="hint">One instrument or vocal per file, all recorded to the same tempo and starting at the same moment. Start each take with about a second of silence so the noise clean-up can learn your room. The first layer sets the timing.</p>
+    <div class="row">
+      <label class="row"><input id="file" type="file" accept="audio/*" multiple hidden><button id="add">+ Add audio files</button></label>
+      <button id="demo">Load demo takes</button>
+      <span class="hint" style="margin:0">WAV, MP3, M4A, FLAC</span>
+    </div>
+    <div id="layers"><div class="empty">No layers yet. Add your takes, or load the demo to try it.</div></div>
+  </section>
+
+  <section>
+    <h2><span class="step">2</span> Style and adjustments</h2>
+    <div class="row">
+      <label>Preset <select id="preset"></select></label>
+    </div>
+    <p class="hint" style="margin-top:12px">Describe what you want. Start with a layer name to target it, otherwise it applies to everything. Separate requests with <code>;</code></p>
+    <div class="row" style="flex-wrap:nowrap">
+      <textarea id="prompt" placeholder="vocal: warmer and less harsh; guitar: tighter"></textarea>
+      <button id="apply">Apply</button>
+    </div>
+    <div class="chips" id="chips"></div>
+    <ul class="changes" id="changes"></ul>
+  </section>
+
+  <section>
+    <h2><span class="step">3</span> Polish</h2>
+    <div class="row">
+      <button id="go" class="primary" disabled>Polish my song</button>
+      <span id="progress" class="progress"></span>
+    </div>
+    <div id="results" hidden>
+      <div class="row" style="margin-top:16px">
+        <button id="play">▶ Play</button>
+        <div class="ab"><button id="ab-raw">Raw</button><button id="ab-pol" class="on">Polished</button></div>
+        <span class="hint" style="margin:0">Switch while playing to compare</span>
+      </div>
+      <canvas id="wave" width="900" height="70"></canvas>
+      <div class="stats" id="stats"></div>
+      <div class="row" style="margin-top:14px" id="downloads"></div>
+      <details><summary>Processing log: what was done to each layer</summary><pre id="log"></pre></details>
+    </div>
+  </section>
+
+  <footer>
+    Prototype. Vocal tuning isn't in the browser version yet. Source: <a href="https://github.com/DJWWC/layerpolish">github.com/DJWWC/layerpolish</a>
+  </footer>
+</main>
+<script type="module" src="app.js"></script>
+</body>
+</html>
