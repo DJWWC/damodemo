@@ -23,8 +23,10 @@ guide is in the **How to use** tab on the right edge of the page.
    of silence at the start. Tune guitars first. On iPad, record in Voice
    Memos or GarageBand and save the files to the Files app.
 2. **Add your layers** (section 1), or *Load demo takes* to try it. Check each
-   layer's type. The first layer is the timing master, so use your best-timed
-   part.
+   layer's type. One layer is the timing master (its tempo sets the beat
+   grid). It starts as the first one added; tap *make timing master* on your
+   best-timed rhythm part (strummed guitar, drums, bass) to switch. Vocals
+   don't give a clear beat.
 3. **Listen** with the play bar at the top, and the mixer's Mute / Solo.
 4. **Arrange, if needed** (section 2): split, cut, copy, paste, duplicate,
    move, with snapping and undo. Arrange before polishing.

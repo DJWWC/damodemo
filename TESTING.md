@@ -44,6 +44,7 @@ the layers line up when loaded.
 | 2.7 | Mixer: **M** on the vocal, then **S** on the guitar, then clear both | Mute and solo work instantly | | |
 | 2.8 | **▶ Play this layer** on the vocal card | Only the vocal plays | | |
 | 2.9 | Do the layers line up in time? | Guitar and vocal sound together, not offset | | |
+| 2.10 | Tap **make timing master** on the vocal, then back on the guitar | The "timing master" label moves and polished layers show *Changed: re-polish*. With the vocal as master the tempo may be wrong (expected), so switch back to the guitar | | |
 
 ---
 
@@ -76,7 +77,7 @@ Undo everything before section 4 (or reload the page and re-add the files).
 | 4.3 | Mixer: flip the guitar **Raw / Polished** while playing | Polished sounds cleaner and tighter, and still like *your* guitar | | |
 | 4.4 | Vocal card: type **"warmer and less harsh"** → Apply → **Re-polish** / Polish | Change list shows what was adjusted. Vocal sounds warmer | | |
 | 4.5 | Try your own words for the vocal ("too nasal", "buried", "drier") | Sensible changes, or a clear "can't do that" message | | |
-| 4.6 | Load R3 (sloppy guitar), make it the timing master's partner, polish it | Timing noticeably tighter. Natural or robotic? | | |
+| 4.6 | Load R3 (sloppy guitar) with R1 as the timing master, and polish R3 | Timing noticeably tighter. Natural or robotic? | | |
 | 4.7 | Load R4 (noisy vocal) and polish it | Background noise reduced without the voice sounding watery | | |
 | 4.8 | Are the chords reported for R1 correct? | Chords match what you played | | |
 | 4.9 | Edit a polished layer (split it) | Status: **Edited: re-polish**. Mixer uses the raw version until re-polished | | |
