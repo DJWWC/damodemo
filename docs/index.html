@@ -95,6 +95,9 @@
   .layer ul.changes { margin-top: 6px; }
   .report { font-size: 13px; color: var(--muted); margin-top: 6px; }
   .report b { color: var(--ink); }
+  .chart { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
+  .chart span { border: 1px solid var(--line); border-radius: 6px; padding: 2px 8px; font-weight: 600; color: var(--ink); background: var(--panel); min-width: 48px; }
+  .chart small { color: var(--muted); font-weight: 400; margin-right: 6px; font-size: 10px; }
   /* mixer */
   .mixer { display: grid; grid-template-columns: minmax(70px, 1fr) auto auto auto minmax(0, 2fr) minmax(0, 1.3fr); gap: 8px 10px; align-items: center; margin-top: 10px; width: 100%; padding-right: 4px; }
   .mixer .h { font-size: 12px; color: var(--muted); }
@@ -117,6 +120,7 @@
   .tl-toolbar { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-bottom: 8px; }
   .tl-toolbar button { padding: 6px 10px; font-size: 14px; touch-action: manipulation; }
   .tl-toolbar button:disabled { opacity: .4; cursor: default; }
+  .tl-toolbar > button.on { background: var(--soft); border-color: var(--accent); color: var(--accent); font-weight: 600; }
   .tl-toolbar .ab button { padding: 6px 12px; }
   .tl-sep { width: 1px; height: 24px; background: var(--line); margin: 0 2px; }
   .tl-snap { font-size: 13px; color: var(--muted); display: flex; gap: 4px; align-items: center; }
@@ -197,7 +201,8 @@
         <li>Snap lines parts up with the beat or with another track's hits. Pinch to zoom, two fingers to scroll.</li></ul></li>
       <li><b>Polish each layer</b> (section 1, on each card).
         <ul><li>Pick a preset in section 3 if you like, then type what you want in the layer's box: “warmer”, “less nasal”, “tighter”, “drier”.</li>
-        <li>Tap <i>Polish this layer</i> and listen. Not right? Make another request and <i>Re-polish</i>. The status shows when a layer needs re-polishing.</li></ul></li>
+        <li>Tap <i>Polish this layer</i> and listen. Not right? Make another request and <i>Re-polish</i>. The status shows when a layer needs re-polishing.</li>
+        <li>Tap <i>🎵 Detect notes</i> to see the chords by bar (guitars, bass) or the melody (vocals), shown on the timeline too. Download them as MIDI to use in GarageBand or Logic.</li></ul></li>
       <li><b>Balance the mix</b> (section 4). Switch each layer between <i>Raw</i> and <i>Polished</i> while it plays to compare, and set volume and pan with the sliders.</li>
       <li><b>Render the final mix</b> (section 5). It uses exactly what the mixer is set to, then balances the song and sets streaming loudness. Compare it with the unprocessed mix, then download the WAV.</li>
     </ol>
@@ -257,6 +262,8 @@
       <button class="small" id="all-raw">All raw</button>
       <button class="small" id="all-pol">All polished</button>
       <button class="small" id="export-layers" title="Every layer, as chosen in the mixer, lined up from 0:00">⬇ All layers (ZIP)</button>
+      <button class="small" id="detect-all" title="Detect notes and chords on every layer">🎵 Detect notes on all</button>
+      <button class="small" id="midi-all" title="All detected notes as one MIDI file, one track per layer">⬇ MIDI (all layers)</button>
       <span id="mix-progress" class="progress"></span>
     </div>
     <div id="mixer"><div class="empty">Add layers to use the mixer.</div></div>
@@ -283,7 +290,7 @@
   </section>
 
   <footer>
-    Prototype · prompt interpreter v<span id="ver"></span>. Vocal tuning isn't in the browser version yet. Source: <a href="https://github.com/DJWWC/damodemo">github.com/DJWWC/damodemo</a>. MP3 encoding uses <a href="https://lame.sourceforge.io" target="_blank" rel="noopener">LAME</a> (lamejs, LGPL).
+    Prototype · prompt interpreter v<span id="ver"></span>. Vocal tuning isn't in the browser version yet. Source: <a href="https://github.com/DJWWC/damodemo">github.com/DJWWC/damodemo</a>. MP3 encoding uses <a href="https://lame.sourceforge.io" target="_blank" rel="noopener">LAME</a> (lamejs, LGPL). Note detection uses Spotify's <a href="https://github.com/spotify/basic-pitch-ts" target="_blank" rel="noopener">Basic Pitch</a> (Apache-2.0).
   </footer>
 </main>
 <script type="module" src="app.js"></script>

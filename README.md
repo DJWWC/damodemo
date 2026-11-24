@@ -75,6 +75,25 @@ Work one layer at a time:
    out, raw or polished as chosen) through the song-level pass. You can compare
    it with the unprocessed mix and download it.
 
+### Notes and chords
+
+Tap **🎵 Detect notes** on a layer (or **Detect notes on all** in the mixer).
+It uses Spotify's open-source Basic Pitch model, running on the device:
+
+- **Guitars and bass:** a chord chart by bar (e.g. `1 C · 2 G · 3 Am · 4 F`).
+- **Vocals and bass:** the melody as note names.
+- **Timeline:** notes drawn on each lane as a mini piano roll, with chord
+  names above. Toggle with **🎵 Notes**.
+- **MIDI:** **⬇ MIDI** per layer, or **⬇ MIDI (all layers)**: one track per
+  layer at the detected tempo, lined up from 0:00, ready for GarageBand,
+  Logic or any DAW. MIDI is also included in the ZIP downloads.
+
+It reads what was played and doesn't generate audio. The model (about 1.2 MB)
+downloads the first time it's used. On the demo takes it finds the exact
+chords and every melody note. Expect some mistakes on real recordings,
+especially busy strumming. Editing a layer marks its notes as needing
+re-detection.
+
 ### Downloads (any stage, for other software)
 
 Pick the format once from **⬇** in the play bar: **WAV** 24-bit (studio),
@@ -216,6 +235,8 @@ never is.
 | `tests/clips_test.mjs` | Editing tests: `node tests/clips_test.mjs` |
 | `docs/export.js`, `docs/mp3worker.js` | Downloads: WAV / AIFF writers, MP3 (lamejs, in a background worker), ZIP |
 | `tests/export_test.mjs` | Writes test WAV / AIFF / ZIP files: `node tests/export_test.mjs /tmp/exp` |
+| `docs/notes.js` | Note detection (Basic Pitch), chord naming, chord chart by bar, MIDI writer |
+| `tests/notes_test.mjs` | Runs note detection on the demo takes. Needs `@spotify/basic-pitch` installed and `docs/` served on :8765 (see file) |
 | `tests/engine_test.mjs` | Runs the browser engine end to end in Node: `node tests/engine_test.mjs /tmp/out` |
 | `tests/interpret_test.mjs` | Phrase tests for the interpreter: `node tests/interpret_test.mjs` |
 | `tools/build_dictionary.mjs` | Regenerates `PROMPT_DICTIONARY.md` from `docs/interpret.js` |
@@ -238,6 +259,9 @@ never is.
 
 MP3 export uses [LAME](https://lame.sourceforge.io) through lamejs
 (LGPL-3.0, unmodified, in `docs/vendor/`, licence note alongside).
+Note detection uses Spotify's [Basic Pitch](https://github.com/spotify/basic-pitch-ts)
+model and TensorFlow.js (both Apache-2.0), bundled unmodified in
+`docs/vendor/basic-pitch/` (see `NOTICE.txt` there).
 
 The prototype depends on open-source libraries, including Spotify's
 `pedalboard` (GPL-3.0), `librosa` (ISC), `noisereduce` (MIT) and `pyloudnorm`

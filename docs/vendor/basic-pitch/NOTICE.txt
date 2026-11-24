@@ -1,0 +1,5 @@
+basic-pitch.bundle.js is an unmodified esbuild bundle of:
+  - @spotify/basic-pitch 1.0.1   Copyright 2022 Spotify AB       Apache-2.0 (LICENSE-basic-pitch.txt)
+  - @tensorflow/tfjs 3.21.0      Copyright Google LLC            Apache-2.0 (same licence text)
+  - @tonejs/midi                 Copyright Yotam Mann            MIT
+model.json / group1-shard1of1.bin: the Basic Pitch ICASSP 2022 model from @spotify/basic-pitch (Apache-2.0).

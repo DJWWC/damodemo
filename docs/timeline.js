@@ -13,7 +13,7 @@ export function createTimeline(root, api) {
   // api: layers(), position(), seek(sec), songLength(), grid(), onsetsFor(layer), edit([{layer, clips}]),
   //      undo(), redo(), canUndo(), canRedo(), onSelect()
   const view = { start: 0, pps: 0 };          // seconds at left edge, pixels per second
-  const ui = { tool: "move", snap: "grid", gridRes: "beat" };
+  const ui = { tool: "move", snap: "grid", gridRes: "beat", notes: true };
   let sel = null;                              // {type:"clip", layer, id} | {type:"range", layer, a, b}  (samples)
   let clipboard = null;                        // {board, from}
   let action = null, drag = null;              // current one-finger action, drag preview
@@ -38,6 +38,8 @@ export function createTimeline(root, api) {
         <option value="off">Off</option><option value="grid" selected>Beat grid</option>
         <option value="hits">Other tracks' hits</option><option value="both">Grid + hits</option></select></label>
       <label class="tl-snap">Grid <select data-k="gridRes"><option value="bar">Bar</option><option value="beat" selected>Beat</option><option value="half">½ beat</option></select></label>
+      <span class="tl-sep"></span>
+      <button data-op="notes" title="Show detected notes and chords on the lanes">🎵 Notes</button>
       <span class="tl-sep"></span>
       <button data-op="zoomout" title="Zoom out">−</button><button data-op="zoomin" title="Zoom in">+</button><button data-op="fit" title="Show the whole song">Fit</button>
     </div>
@@ -184,6 +186,31 @@ export function createTimeline(root, api) {
         if (m > 0.002) g.fillRect(x, mid - m * amp, 1, Math.max(1, 2 * m * amp));
       }
     }
+    const nd = ui.notes && !(drag && drag.layer === l) && api.notesFor ? api.notesFor(l) : null;
+    if (nd && nd.notes.length) {
+      // mini piano roll: pitch range of this layer mapped to the lane height
+      let lo = Infinity, hi = -Infinity;
+      for (const n of nd.notes) { if (n.midi < lo) lo = n.midi; if (n.midi > hi) hi = n.midi; }
+      const top = nd.chords.length ? 16 : 6, span = Math.max(6, hi - lo + 1), rowH = Math.max(1.5, (h - top - 6) / span);
+      g.fillStyle = ink; g.globalAlpha = 0.55;
+      for (const n of nd.notes) {
+        const x0 = secToX(n.start), x1 = secToX(n.start + n.dur);
+        if (x1 < 0 || x0 > w) continue;
+        const y = h - 6 - (n.midi - lo + 1) * rowH;
+        g.fillRect(x0, y, Math.max(1.5, x1 - x0), Math.max(1.5, rowH - 0.5));
+      }
+      g.globalAlpha = 1;
+      if (nd.chords.length) {
+        g.font = "600 11px system-ui, sans-serif"; g.textBaseline = "top";
+        for (const c of nd.chords) {
+          if (!c.chord) continue;
+          const x = secToX(c.start); if (x > w || secToX(c.end) < 0) continue;
+          const tw = g.measureText(c.chord).width + 8;
+          g.fillStyle = css("--panel"); g.globalAlpha = 0.9; g.fillRect(Math.max(0, x) + 1, 2, tw, 13); g.globalAlpha = 1;
+          g.fillStyle = ink; g.fillText(c.chord, Math.max(0, x) + 5, 3);
+        }
+      }
+    }
     if (sel && sel.type === "range" && sel.layer === l) {
       const x0 = secToX(sel.a / SR), x1 = secToX(sel.b / SR);
       g.fillStyle = "rgba(60,120,220,.22)"; g.fillRect(x0, 0, x1 - x0, h);
@@ -227,6 +254,7 @@ export function createTimeline(root, api) {
     set("paste", !!clipboard); set("undo", api.canUndo()); set("redo", api.canRedo());
     set("split", api.layers().length > 0);
     root.querySelectorAll("[data-tool]").forEach((b) => b.classList.toggle("on", b.dataset.tool === ui.tool));
+    const nb = root.querySelector('[data-op="notes"]'); if (nb) nb.classList.toggle("on", ui.notes);
   }
   function updateInfo() {
     const r = selRange();
@@ -274,6 +302,7 @@ export function createTimeline(root, api) {
     else if (op === "zoomin") zoomAround(api.position() >= view.start && api.position() <= view.start + visSecs() ? api.position() : view.start + visSecs() / 2, 1.6);
     else if (op === "zoomout") zoomAround(view.start + visSecs() / 2, 1 / 1.6);
     else if (op === "fit") fit();
+    else if (op === "notes") ui.notes = !ui.notes;
     invalidate();
   }
   root.querySelectorAll("[data-op]").forEach((b) => (b.onclick = () => ops(b.dataset.op)));

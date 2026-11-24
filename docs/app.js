@@ -5,6 +5,7 @@ import { demoGuitar, demoVocal } from "./demo.js";
 import * as C from "./clips.js";
 import { createTimeline } from "./timeline.js";
 import { FORMATS, encode, zip, padTo } from "./export.js";
+import { detectNotes, chordChart, chordsFromNotes, toMidi, noteName } from "./notes.js";
 
 const $ = (id) => document.getElementById(id);
 const esc = (s) => String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;");
@@ -114,6 +115,51 @@ function afterEdit() {
 const editedSincePolish = (l) => !!l.polished && l.polishedClips !== l.clipSig;
 const effectiveUse = (l) => (l.use === "pol" && l.polished && !editedSincePolish(l) ? "pol" : "raw");
 
+// ------------------------------------------------------------------ notes & chords (Spotify Basic Pitch, on-device)
+const notesFresh = (l) => !!l.notes && l.notesClips === l.clipSig;
+async function detectLayerNotes(l) {
+  if (l.detecting) return;
+  l.detecting = true; l.detectPct = 0; renderAll();
+  const clipSig = l.clipSig;
+  try {
+    let lastPaint = 0;
+    const notes = await detectNotes(l.raw, l.type, new URL("./", location.href).href, (p) => {
+      l.detectPct = p;
+      const now = performance.now();
+      if (now - lastPaint > 250) { lastPaint = now; const b = document.querySelector(`[data-layer="${l.id}"] [data-act="notes"]`); if (b) b.textContent = `🎵 Detecting… ${Math.round(p * 100)}%`; }
+    });
+    await ensureAnalysis();
+    l.notes = notes; l.notesClips = clipSig;
+    l.chords = l.type === "vocal" ? [] : chordChart(notes, state.analysis?.grid ? Array.from(state.analysis.grid) : null);
+    l.chordSegs = l.type === "vocal" || !state.analysis ? [] : chordsFromNotes(notes, halfBarBounds(notes));
+  } catch (err) {
+    alert(`Couldn't detect notes on ${l.name}: ${err.message}`);
+  } finally { l.detecting = false; renderAll(); }
+}
+function halfBarBounds(notes) {
+  const g = state.analysis.grid, out = [];
+  for (let i = 0; i < g.length; i += 4) out.push(g[i] / SR);
+  const last = notes.reduce((m, n) => Math.max(m, n.start + n.dur), 0);
+  const b = out.filter((t) => t <= last + 0.5);
+  if (b.length > 1) b.push(b[b.length - 1] + (b[1] - b[0]));
+  return b;
+}
+function notesSummary(l) {
+  if (!l.notes) return "";
+  if (!notesFresh(l)) return `<div class="report">🎵 Notes were detected before your last edit. Tap <i>Re-detect notes</i> to update.</div>`;
+  if (!l.notes.length) return `<div class="report">🎵 No clear notes found on this layer.</div>`;
+  const lo = Math.min(...l.notes.map((n) => n.midi)), hi = Math.max(...l.notes.map((n) => n.midi));
+  let html = `<div class="report">🎵 <b>${l.notes.length} notes</b> detected, range <b>${noteName(lo)}–${noteName(hi)}</b>`;
+  if (l.type === "vocal" || l.type === "bass") html += `<br>Melody: <b>${l.notes.slice(0, 40).map((n) => noteName(n.midi).replace(/-?\d+$/, "")).join(" ")}${l.notes.length > 40 ? " …" : ""}</b>`;
+  if (l.chords && l.chords.length) html += `<div class="chart">${l.chords.map((b) => `<span><small>${b.bar}</small>${b.chords.join(" ")}</span>`).join("")}</div>`;
+  return html + "</div>";
+}
+function midiAll() {
+  const ready = state.layers.filter(notesFresh);
+  if (!ready.length) return null;
+  return toMidi(ready.map((l) => ({ name: l.name, type: l.type, notes: l.notes })), state.analysis?.tempo || 120);
+}
+
 // tempo grid and per-layer hits for snapping, worked out in the background after changes
 let bgTimer = null;
 function background() {
@@ -196,6 +242,7 @@ function renderLayers() {
     const [cls, label] = status(l);
     const el = document.createElement("div");
     el.className = "layer";
+    el.dataset.layer = l.id;
     const typeOpts = Object.entries(SOUND_TYPES).map(([k, v]) => `<option value="${k}" ${k === l.type ? "selected" : ""}>${v.label}</option>`).join("");
     const rep = l.report ? reportLine(l) : "";
     el.innerHTML = `
@@ -211,6 +258,8 @@ function renderLayers() {
         <span class="status ${cls}">${label}</span>
         <button class="small ${cls === "ok" ? "" : "primary"}" data-act="polish" ${l.busy ? "disabled" : ""}>${l.polished ? "Re-polish" : "Polish this layer"}</button>
         <button class="small" data-act="solo-play" title="Play just this layer">${player.playing && soloPreview === l ? "■ Stop" : "▶ Play this layer"}</button>
+        <button class="small" data-act="notes" ${l.detecting ? "disabled" : ""} title="Detect the notes and chords played on this layer">${l.detecting ? `🎵 Detecting… ${Math.round((l.detectPct || 0) * 100)}%` : l.notes && notesFresh(l) ? "🎵 Re-detect notes" : "🎵 Detect notes"}</button>
+        ${l.notes && notesFresh(l) ? '<button class="small" data-act="dl-midi" title="Download the detected notes as a MIDI file">⬇ MIDI</button>' : ""}
         <button class="small" data-act="dl-raw" title="Download this layer as arranged (unpolished), lined up from 0:00">⬇ Arranged</button>
         ${l.polished && !editedSincePolish(l) ? '<button class="small" data-act="dl-pol" title="Download the polished layer, lined up from 0:00">⬇ Polished</button>' : ""}
       </div>
@@ -219,6 +268,7 @@ function renderLayers() {
         <button class="small" data-act="apply">Apply</button>
       </div>
       <ul class="changes">${l.history.slice(0, 3).map(historyItem).join("")}</ul>
+      ${notesSummary(l)}
       ${rep}
       <details ${l.knobsOpen ? "open" : ""}><summary>Knobs (what presets and requests change)</summary><div class="knobs"></div></details>`;
     const nameIn = el.querySelector('[data-k="name"]');
@@ -244,6 +294,8 @@ function renderLayers() {
       if (act === "del") { stopPlayback(); timeline.dropLayer(l); state.layers.splice(state.layers.indexOf(l), 1); invalidateAnalysis(); renderAll(); background(); }
       if (act === "first") { stopPlayback(); state.layers.splice(state.layers.indexOf(l), 1); state.layers.unshift(l); invalidateAnalysis(); renderAll(); background(); }
       if (act === "solo-play") togglePreview(l);
+      if (act === "notes") detectLayerNotes(l);
+      if (act === "dl-midi") download(toMidi([{ name: l.name, type: l.type, notes: l.notes }], state.analysis?.tempo || 120), `damodemo_${l.name}_notes.mid`);
       if (act === "dl-raw") exportAudio([padTo(l.raw, songSamples())], `damodemo_${l.name}_arranged`);
       if (act === "dl-pol") exportAudio([padTo(l.polished, songSamples())], `damodemo_${l.name}_polished`);
     }));
@@ -381,6 +433,15 @@ $("fmt").innerHTML = Object.entries(FORMATS).map(([k, v]) => `<option value="${k
 try { const saved = localStorage.getItem("dd-format"); if (saved && FORMATS[saved]) $("fmt").value = saved; } catch {}
 $("fmt").onchange = () => { try { localStorage.setItem("dd-format", $("fmt").value); } catch {} exportStatus(`Downloads will be ${FORMATS[$("fmt").value].label}`); };
 $("export-layers").onclick = () => exportBundle(false);
+$("detect-all").onclick = async () => {
+  for (const [i, l] of state.layers.entries()) {
+    if (notesFresh(l)) continue;
+    $("mix-progress").textContent = `Detecting notes on ${l.name} (${i + 1}/${state.layers.length})…`;
+    await detectLayerNotes(l);
+  }
+  $("mix-progress").textContent = "Notes detected.";
+};
+$("midi-all").onclick = () => { const m = midiAll(); if (m) download(m, "damodemo_notes.mid"); else $("mix-progress").textContent = "Detect notes first (🎵 on each layer, or Detect notes on all)."; };
 $("all-raw").onclick = () => { state.layers.forEach((l) => (l.use = "raw")); applyLiveMix(); renderMixer(); };
 $("all-pol").onclick = () => { state.layers.forEach((l) => l.polished && (l.use = "pol")); applyLiveMix(); renderMixer(); };
 $("polish-all").onclick = async () => {
@@ -587,6 +648,8 @@ async function exportBundle(withFinal) {
       files.push({ name: `00_final_mix.${fmt.ext}`, data: await encode(state.final.stereo, SR, f) });
       files.push({ name: "processing_log.json", data: $("log").textContent });
     }
+    const mid = midiAll();
+    if (mid) files.push({ name: "notes_all_layers.mid", data: mid });
     files.push({ name: "README.txt", data: [
       "DamoDemo export",
       "",
@@ -594,6 +657,7 @@ async function exportBundle(withFinal) {
       "so they line up when imported into Logic, Pro Tools, Ableton, Cubase, GarageBand etc.",
       "Layer files are dry: mixer volume and pan are not applied to them (only to the final mix).",
       "Each layer is the version selected in the mixer: 'polished' or 'arranged' (edited but not polished).",
+      "notes_all_layers.mid (if notes were detected): one MIDI track per layer, also lined up from 0:00.",
       `Tempo: ${state.analysis ? state.analysis.tempo.toFixed(1) + " BPM" : "n/a"}${state.analysis ? ", key: " + state.analysis.key : ""}`,
     ].join("\n") });
     exportStatus("Building the ZIP…");
@@ -660,6 +724,7 @@ const timeline = createTimeline($("timeline"), {
   canUndo: () => history.undo.length > 0,
   canRedo: () => history.redo.length > 0,
   statusFor: (l) => status(l)[1],
+  notesFor: (l) => (notesFresh(l) ? { notes: l.notes, chords: l.chordSegs || [] } : null),
 });
 
 $("ver").textContent = INTERPRETER_VERSION;

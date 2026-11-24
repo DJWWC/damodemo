@@ -81,6 +81,12 @@ Undo everything before section 4 (or reload the page and re-add the files).
 | 4.8 | Are the chords reported for R1 correct? | Chords match what you played | | |
 | 4.9 | Edit a polished layer (split it) | Status: **Edited: re-polish**. Mixer uses the raw version until re-polished | | |
 
+| 4.10 | **🎵 Detect notes** on the guitar (R1) | Finishes with a progress %. Time taken: ____ s for ____ s of audio | | |
+| 4.11 | Is the chord chart right? | Chords by bar match what you played: ____________ | | |
+| 4.12 | **🎵 Detect notes** on the vocal | Melody note names look right (roughly the notes you sang) | | |
+| 4.13 | Timeline: notes and chord names show on the lanes. **🎵 Notes** toggles them | Chords line up with the bars | | |
+| 4.14 | **⬇ MIDI** → open in GarageBand | The guitar/vocal notes play back as MIDI, in time with the audio | | |
+
 ---
 
 ## 5. Mix and final render

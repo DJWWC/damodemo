@@ -72,6 +72,25 @@ descriptors), never audio.
   between lanes, ripple editing (closing gaps), per-clip fades or gain,
   recording directly in the app.
 
+### Notes and chords — built Nov 2026
+
+- Spotify Basic Pitch (Apache-2.0) via TensorFlow.js, bundled unmodified
+  in `docs/vendor/basic-pitch/` (esbuild bundle of @spotify/basic-pitch
+  1.0.1 + tfjs 3.21). Lazy-loaded on first use.
+- Audio is down-sampled to 22.05 kHz (windowed-sinc FIR) as the model expects.
+- Vocals and bass are reduced to one note at a time, and repeated same-pitch
+  notes (vibrato splits) are joined.
+- Chords per half-bar from note weights (duration × loudness). Notes still
+  ringing from before count less, and 7th / sus / extension chords need that
+  note actually played in the segment. Demo: exact C G Am F, melody 16/16
+  notes correct.
+- MIDI: type 1, one track per layer, detected tempo, absolute times (lines
+  up with audio stems from 0:00), General MIDI programs per sound type.
+- Speed: in headless Chrome with software WebGL, about 35 s per 23 s layer.
+  Needs measuring on a real iPad GPU (TESTING.md 4.10).
+- Next uses: browser vocal tuning (target notes known), snapping to note
+  starts, a printable chord / lyric sheet.
+
 ### Roadmap stages
 
 1. **Done:** smarter offline interpreter (v2).
