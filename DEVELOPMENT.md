@@ -48,6 +48,30 @@ descriptors), never audio.
    `node tests/interpret_test.mjs`.
 4. Regenerate the dictionary: `node tools/build_dictionary.mjs > PROMPT_DICTIONARY.md`.
 
+### Editing (Arrange) — built Nov 2026
+
+- Non-destructive clip model (`docs/clips.js`). A layer is a list of clips
+  pointing into original recordings; edits change the list only. Clips on a
+  lane never overlap (moving or pasting replaces what's underneath). 5 ms
+  fades at cut edges.
+- Undo/redo stores snapshots of every layer's clip list (cheap), up to 100.
+- Snapping: beat grid (bar / beat / half-beat) and/or other tracks' detected
+  hits. Moving a clip snaps its start or its first hit, whichever is nearer.
+- The beat grid comes from the timing master's **original** recording, so it
+  stays fixed while you edit.
+- Edit then polish: polishing works on the edited audio. Editing a polished
+  layer marks it *Edited: re-polish*, and the mixer and render use the edited
+  raw version until it's re-polished.
+- Built for iPad first: pointer events, pinch zoom, two-finger scroll,
+  44 px touch targets on `pointer: coarse` screens, and no page zoom on
+  timeline gestures. Audio at the device rate (48 kHz on iPad) is converted
+  to 44.1 kHz on load.
+- Tested with Chrome's iPad Pro 11 emulation (landscape and portrait) using
+  real multi-touch events. **Not yet tested on a real iPad / Safari.**
+- Not included (yet): speed/time-stretch (dropped for now), moving clips
+  between lanes, ripple editing (closing gaps), per-clip fades or gain,
+  recording directly in the app.
+
 ### Roadmap stages
 
 1. **Done:** smarter offline interpreter (v2).

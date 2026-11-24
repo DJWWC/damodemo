@@ -16,6 +16,7 @@
       --soft: #2a2925; --accent: #e0754a; }
   }
   * { box-sizing: border-box; }
+  html { scroll-padding-top: 90px; }   /* keep scrolled-to items clear of the floating play bar */
   body { margin: 0; background: var(--bg); color: var(--ink);
     font: 15px/1.5 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
   main { max-width: 960px; margin: 0 auto; padding: 28px 20px 80px; }
@@ -106,6 +107,40 @@
   .slider span { font-family: var(--mono); color: var(--muted); min-width: 46px; text-align: right; flex: none; }
   .slider.pan span { min-width: 30px; text-align: left; }
   @media (max-width: 720px) { .mixer { grid-template-columns: 1fr auto auto auto; } .mixer .wide { grid-column: span 2; } .mixer .h.wide-h { display: none; } }
+
+  /* timeline */
+  .timeline { margin-top: 6px; user-select: none; -webkit-user-select: none; -webkit-touch-callout: none; }
+  .tl-toolbar { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; margin-bottom: 8px; }
+  .tl-toolbar button { padding: 6px 10px; font-size: 14px; touch-action: manipulation; }
+  .tl-toolbar button:disabled { opacity: .4; cursor: default; }
+  .tl-toolbar .ab button { padding: 6px 12px; }
+  .tl-sep { width: 1px; height: 24px; background: var(--line); margin: 0 2px; }
+  .tl-snap { font-size: 13px; color: var(--muted); display: flex; gap: 4px; align-items: center; }
+  .tl-snap select { padding: 5px 6px; font-size: 13px; }
+  .tl-body { position: relative; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; background: var(--panel); }
+  .tl-ruler, .tl-lane { display: flex; }
+  .tl-ruler { height: 26px; border-bottom: 1px solid var(--line); background: var(--soft); cursor: pointer; }
+  .tl-lane { height: 64px; border-bottom: 1px solid var(--line); }
+  .tl-lane:last-child { border-bottom: 0; }
+  .tl-label { width: 92px; flex: none; padding: 6px 8px; font-size: 13px; border-right: 1px solid var(--line); overflow: hidden; background: var(--panel); }
+  .tl-label b { display: block; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .tl-label small { color: var(--muted); font-size: 11px; line-height: 1.2; display: block; }
+  .tl-body canvas { display: block; }
+  .tl-playhead { position: absolute; top: 0; bottom: 0; width: 2px; margin-left: -1px; background: #d0342c; pointer-events: none; }
+  .tl-snapline { position: absolute; top: 0; bottom: 0; width: 0; border-left: 2px dashed #2f7dd0; pointer-events: none; display: none; }
+  .tl-scroll { width: 100%; margin-top: 6px; accent-color: var(--accent); }
+  .tl-info { font-size: 12px; color: var(--muted); margin-top: 2px; min-height: 18px; }
+  /* bigger targets on touch screens (iPad) */
+  @media (pointer: coarse) {
+    button, select { min-height: 44px; }
+    button.small { min-height: 40px; padding: 6px 12px; }
+    .tl-toolbar button { min-width: 44px; font-size: 15px; }
+    .toggle { width: 44px; }
+    input[type=range] { height: 32px; }
+    .tl-lane { height: 76px; }
+    .knob { grid-template-columns: 110px 1fr 44px; }
+  }
+  button, .chip { touch-action: manipulation; }
 </style>
 </head>
 <body>
@@ -134,7 +169,13 @@
   </section>
 
   <section>
-    <h2><span class="step">2</span> Overall style</h2>
+    <h2><span class="step">2</span> Arrange</h2>
+    <p class="hint">Tidy and arrange your takes: split, cut, copy, paste, duplicate and move parts, snapping to the beat or to another track's hits. Edits never change your original recordings, and Undo always works.</p>
+    <div id="timeline" class="timeline"></div>
+  </section>
+
+  <section>
+    <h2><span class="step">3</span> Overall style</h2>
     <p class="hint">Applies to every layer. Each layer card also has its own request box.</p>
     <div class="row"><label>Preset <select id="preset"></select></label></div>
     <p class="hint" style="margin-top:12px">Describe what you want or what's wrong, in your own words: “warmer”, “the vocal sounds nasal”, “guitar is too bright”, “slightly wider”. Name a layer to target it, otherwise it applies to everything. <a href="https://github.com/DJWWC/layerpolish/blob/main/PROMPT_DICTIONARY.md" target="_blank" rel="noopener">See every phrase it understands</a>.</p>
@@ -147,7 +188,7 @@
   </section>
 
   <section>
-    <h2><span class="step">3</span> Mixer</h2>
+    <h2><span class="step">4</span> Mixer</h2>
     <p class="hint">Plays all layers together. Use <b>M</b> to mute and <b>S</b> to solo. Switch each layer between <b>Raw</b> and <b>Polished</b> while it plays. Volume and pan here are part of the final mix.</p>
     <div class="row">
       <button id="polish-all">Polish all unpolished layers</button>
@@ -159,7 +200,7 @@
   </section>
 
   <section>
-    <h2><span class="step">4</span> Final mix</h2>
+    <h2><span class="step">5</span> Final mix</h2>
     <p class="hint">Renders what the mixer is set to: muted layers left out, each layer raw or polished as chosen, with your volume and pan. The song-level pass then makes room for the vocal, glues the mix and sets streaming loudness (−14 LUFS).</p>
     <div class="row">
       <button id="render" class="primary" disabled>Render final mix</button>

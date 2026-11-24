@@ -26,6 +26,11 @@ const jobs = {
     return { result: { audio, steps, before, after }, transfer: [audio.buffer] };
   },
 
+  // note/strum start positions, used for snapping to other tracks
+  onsets({ audio }) {
+    return { result: { onsets: Int32Array.from(E.detectOnsets(audio).onsets) } };
+  },
+
   // song-level pass on exactly the layers given (raw or polished, as chosen in the mixer)
   mix({ layers, raws }) {
     const { stereo, actions, finalLufs } = E.songPass(layers);

@@ -17,18 +17,33 @@ An automatic producer/engineer for raw home recordings. You record each part
 
 **https://djwwc.github.io/layerpolish/**
 
-Nothing to install. Work one layer at a time:
+Nothing to install, and it's built for **iPad** (Safari) as well as computers.
+Work one layer at a time:
 
 1. **Layers:** add each take (or load the demo). Each layer card has its own
    **Polish this layer** button, its own request box ("warmer, less nasal"),
    its settings, and a before/after report. Its status shows *Not polished*,
-   *Polished* or *Changed: re-polish*.
-2. **Overall style:** a preset and a request box for the whole song.
-3. **Mixer:** plays every layer together in sync, using the play bar that
+   *Polished*, *Changed: re-polish* or *Edited: re-polish*.
+2. **Arrange:** a timeline with one lane per layer. **Split, cut, copy,
+   paste, duplicate, delete and move** parts, with **undo/redo**. Parts
+   **snap** to the beat grid (bar / beat / half-beat), to other tracks' hits
+   (line a vocal entry up with a guitar strum), or both. When you move a part,
+   either its start or its first hit snaps, whichever is closer. Edits are
+   non-destructive, so your original recordings are never changed.
+   - Touch: **Move** tool: tap a part to select it (and place the playhead),
+     drag to move it. **Select** tool: drag across a lane to select a range.
+     Tap empty space or the ruler to move the playhead. **Pinch** to zoom,
+     **two fingers** to scroll, or use − / + / Fit and the scroll slider.
+   - Keyboard (computer): S split, Ctrl/Cmd+X / C / V / D, Delete,
+     Ctrl/Cmd+Z, Ctrl/Cmd+Shift+Z.
+   - Edit first, then polish: editing a polished layer marks it *Edited:
+     re-polish*, and the mixer plays the edited raw version until you do.
+3. **Overall style:** a preset and a request box for the whole song.
+4. **Mixer:** plays every layer together in sync, using the play bar that
    stays at the top of the page, with a timeline slider to scrub. Each layer
    has **Mute**, **Solo**, a **Raw / Polished** switch (works mid-playback),
    and **volume** and **pan** sliders. Space bar plays and stops.
-4. **Final mix:** renders exactly what the mixer is set to (muted layers left
+5. **Final mix:** renders exactly what the mixer is set to (muted layers left
    out, raw or polished as chosen) through the song-level pass. You can compare
    it with the unprocessed mix and download the WAV and processing log.
 
@@ -151,6 +166,9 @@ never is.
 | `make_demo.py` | Generates sloppy test takes |
 | `docs/` | Browser version, served by GitHub Pages: `engine.js` (all DSP), `settings.js` (sound types, presets, knobs), `app.js` (page), `worker.js` (background processing), `demo.js` (demo takes) |
 | `docs/interpret.js` | Plain-English interpreter (v2): vocabulary, modifiers, layer targeting |
+| `docs/clips.js` | Non-destructive editing: clips, split / cut / copy / paste / duplicate / move, flatten with anti-click fades, snap search |
+| `docs/timeline.js` | Arrange timeline: lanes, waveforms, grid, touch gestures (pinch, two-finger scroll), tools, snapping |
+| `tests/clips_test.mjs` | Editing tests: `node tests/clips_test.mjs` |
 | `tests/engine_test.mjs` | Runs the browser engine end to end in Node: `node tests/engine_test.mjs /tmp/out` |
 | `tests/interpret_test.mjs` | Phrase tests for the interpreter: `node tests/interpret_test.mjs` |
 | `tools/build_dictionary.mjs` | Regenerates `PROMPT_DICTIONARY.md` from `docs/interpret.js` |
