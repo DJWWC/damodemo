@@ -81,6 +81,54 @@ descriptors), never audio.
 3. **Then:** Claude as the fallback for anything the interpreter doesn't
    understand (Level 1 below). This needs an API key. Costs are below.
 
+## Planned: Auto-polish (automatic "beauty filter")
+
+Not built yet. Proposed after real-world testing (see `TESTING.md`).
+
+**What it does:** an **Auto-polish** button per layer (and for all layers)
+that measures the layer, compares it with target ranges for its sound type,
+and moves the existing knobs to close the gap. A **strength slider (0–100%)**
+works like a photo filter's intensity. The changes are listed and shown on the
+knobs, so the user can override any of them by hand or with a request.
+
+**How it works (rule-based v1, free, on-device):**
+1. Targets per sound type: tonal balance (low / low-mid / mid / presence /
+   air), mud (250–600 Hz), harshness and sibilance (5–9 kHz), nasal (~1 kHz),
+   dynamics (how much compression), noise floor, timing spread, and level
+   relative to the other layers.
+2. Measure the layer (most of this already exists in the before/after reports).
+3. Map each gap to a capped knob move, e.g. low-mids +3 dB over target →
+   boxiness −3 dB; too dynamic → more compression; hiss → more noise clean-up.
+4. Process, re-measure, adjust: 2–3 rounds until within target.
+5. Song level: reduce clashes between layers and balance levels (the final
+   mix pass already does a basic version).
+
+**How it knows what's "better":** it only knows the distance from its
+targets, so the targets carry the judgement:
+- v1: engineering rules of thumb for known problems (mud, harshness, hiss,
+  uneven level). This is "less wrong" more than "more beautiful".
+- v2: targets measured from well-produced reference recordings, per style or
+  preset, since genres measure differently.
+- User reference: "make it sound like this track", measured on the device and
+  used as the target.
+- Optional later: Claude chooses targets from taste words plus measurements
+  (API cost, see below).
+
+**Checking it with ears, not numbers:**
+- Blind A/B listening: play raw and auto-polished in random order and see
+  which testers pick. (Possible feature: a blind A/B mode in the page.)
+- Watch what users undo or reverse after Auto (tracked locally only). A move
+  that keeps getting reversed means that target is wrong.
+
+**Limits:** good at removing problems, less good at creating a style (presets
+and requests still handle style). It can make everything sound alike if pushed
+hard, hence the strength slider and visible changes. It only improves what was
+recorded.
+
+**Effort:** rule-based v1 with the Auto button, strength slider and
+measure-and-adjust loop is about 1–1.5 developer days, reusing the existing
+measurements and knobs.
+
 ## AI roadmap
 
 ### Level 1: AI engineer that sets the knobs (easy, ~1 day)
