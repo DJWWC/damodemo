@@ -1,5 +1,22 @@
 # DamoDemo: development notes
 
+> ## ▶ START HERE (next session)
+>
+> **Status at 24 Nov 2026 (commit after `829122d`):** browser app live at
+> https://djwwc.github.io/damodemo/ (GitHub Pages from `main` / `/docs`).
+> Built: per-layer polish, plain-English interpreter v2, Arrange timeline
+> (split / cut / copy / paste / duplicate / move, undo, snapping, iPad
+> gestures), live mixer, final render, WAV / AIFF / MP3 / ZIP downloads,
+> note and chord detection with MIDI export, Audio Adjustments panel,
+> How to use side panel. Waiting on real-iPad testing (`TESTING.md`).
+>
+> **Next task: built-in recorder.** Spec below under
+> "Next: built-in recorder". Then: Auto-polish, the Claude API upgrade,
+> and browser vocal tuning.
+>
+> **To resume in a new Claude session:** "Connect the DJWWC/damodemo repo
+> and build the recorder described in DEVELOPMENT.md (START HERE)."
+
 Working notes on where the project is going. User-facing instructions are in
 `README.md`.
 
@@ -99,6 +116,66 @@ descriptors), never audio.
    per-request A/B. Still free and offline.
 3. **Then:** Claude as the fallback for anything the interpreter doesn't
    understand (Level 1 below). This needs an API key. Costs are below.
+
+## Next: built-in recorder (not built yet, next task)
+
+Record straight into a new layer in the browser (iPad Safari first).
+
+**Features (core, about 1–1.5 developer days):**
+- **⏺ Record new layer** button: choose a sound type, record, and it becomes a
+  normal layer (source, clips, lane, card) like an uploaded file.
+- **Click track and count-in:** a tempo field (defaults to the detected song
+  tempo once a layer exists, else 90), one-bar count-in, click on/off. The
+  click must not be recorded, so it plays only to the output.
+- **Overdub:** existing layers play (from the mixer, with mute/solo) while
+  recording. Show "use headphones" when overdubbing.
+- **Input level meter** with clipping and too-quiet warnings.
+- **Music-quality capture:** `getUserMedia({audio: {echoCancellation: false,
+  noiseSuppression: false, autoGainControl: false}})`. Device picker for USB
+  interfaces (`enumerateDevices`).
+- **Latency compensation:** shift new takes by `outputLatency + baseLatency`
+  (where available) plus a one-time calibration (record a click back through
+  the mic, measure the offset, and save it with try/catch localStorage).
+- Capture with an AudioWorklet (fallback: ScriptProcessor) into Float32 chunks.
+  The context runs at the device rate (48 kHz on iPad), so resample to 44.1 kHz
+  as `decode()` already does (OfflineAudioContext).
+- Stop if the page is hidden. Keep the screen awake if supported.
+
+**Later:** multiple takes per layer with take picking, punch-in, and a
+calibration wizard.
+
+**Testing:** Chrome with `--use-fake-device-for-media-stream
+--use-fake-ui-for-media-stream` gives a test tone as the mic, which tests
+the pipeline, alignment and UI. Real mic quality, iPad latency and USB
+interfaces must be tested on a real iPad: add rows to `TESTING.md`.
+
+### How the code is organised (browser, `docs/`)
+
+| File | Role |
+|---|---|
+| `app.js` | Page logic: layers (`addLayer`, `reflatten`, `edit` / undo), worker jobs, polish, mixer playback (`startPlayback`, `applyLiveMix`), final render, exports, notes |
+| `engine.js` | All DSP (pure JS): analysis, repair, tone chain, song pass, LUFS |
+| `worker.js` | Background jobs: `analyse`, `polish`, `onsets`, `mix` |
+| `clips.js` | Non-destructive clip editing |
+| `timeline.js` | Arrange timeline UI and touch gestures |
+| `interpret.js` / `settings.js` | Plain-English interpreter, sound types, presets, Audio Adjustments groups |
+| `export.js` / `mp3worker.js` | WAV / AIFF / MP3 / ZIP |
+| `notes.js` | Basic Pitch note detection, chords, MIDI |
+
+New layers must go through `addLayer(name, type, float32At44k)`, so a recorded
+take gets clips, peaks, onsets and analysis automatically.
+
+### How it has been tested
+
+- Node: `node tests/clips_test.mjs`, `node tests/interpret_test.mjs`,
+  `node tests/engine_test.mjs /tmp/out`, `node tests/export_test.mjs /tmp/exp`,
+  `tests/notes_test.mjs` (needs `@spotify/basic-pitch` installed and `docs/`
+  served on :8765; see file).
+- Headless Chrome via Python Playwright (`/usr/bin/google-chrome`), serving
+  `docs/` with `python3 -m http.server 8765 -d docs`. iPad emulation with
+  `p.devices["iPad Pro 11 landscape"]` and real multi-touch through CDP
+  `Input.dispatchTouchEvent`. `window.damodemo` exposes `{state, timeline,
+  history}` for checks. Downloads checked with ffprobe and libsndfile.
 
 ## Planned: Auto-polish (automatic "beauty filter")
 

@@ -41,6 +41,9 @@ page.
 **Testing:** a step-by-step real-world test plan for iPad is in
 [TESTING.md](TESTING.md).
 
+**Developers:** current status and where to pick up next are at the top of
+[DEVELOPMENT.md](DEVELOPMENT.md) ("START HERE").
+
 ## Try it in your browser
 
 **https://djwwc.github.io/damodemo/**
