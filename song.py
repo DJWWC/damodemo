@@ -60,10 +60,18 @@ def mix(layers, sr):
     lead_types = {"vocal"} if vocals else {layers[names[0]]["type"]}
     stereo = np.zeros((2, n), dtype=np.float32)
     for k in names:
-        target = LEAD_LUFS if layers[k]["type"] in lead_types else SUPPORT_LUFS
+        offset = layers[k].get("level_db", 0.0)
+        target = (LEAD_LUFS if layers[k]["type"] in lead_types else SUPPORT_LUFS) + offset
         a, g = _gain_to(layers[k]["audio"], sr, target)
-        actions.append(f"{k}: level {g:+.1f} dB (target {target} LUFS)")
-        stereo += to_stereo(a, layers[k].get("pan", 0.0)).astype(np.float32)
+        st = to_stereo(a, layers[k].get("pan", 0.0)).astype(np.float32)
+        w = layers[k].get("width", 0.0)
+        if w > 0.01:   # pseudo-stereo: delayed, low-cut copy added to L, subtracted from R (mono-compatible)
+            d = int(0.011 * sr)
+            delayed = np.concatenate([np.zeros(d, dtype=np.float32), a[:-d]]).astype(np.float32)
+            side = Pedalboard([HighpassFilter(cutoff_frequency_hz=300)])(delayed[None, :], sr)[0] * (w * 0.5)
+            st[0] += side; st[1] -= side
+        actions.append(f"{k}: level {g:+.1f} dB (target {target:.1f} LUFS)" + (f", width {w:.0%}" if w > 0.01 else ""))
+        stereo += st
 
     stereo = Pedalboard([Compressor(threshold_db=-16, ratio=2.0, attack_ms=20, release_ms=200)])(stereo, sr)
     actions.append("mix bus: glue compression 2:1")

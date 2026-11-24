@@ -52,7 +52,11 @@
   .chips { display: flex; gap: 6px; flex-wrap: wrap; margin: 8px 0; }
   .chip { font-size: 12px; padding: 3px 9px; border-radius: 999px; background: var(--soft); border: 1px solid var(--line); cursor: pointer; }
   ul.changes { margin: 8px 0 0; padding-left: 18px; font-size: 13px; color: var(--muted); }
-  ul.changes code { font-family: var(--mono); color: var(--ink); }
+  ul.changes code { font-family: var(--mono); color: var(--ink); font-size: 12px; }
+  ul.changes > li { margin-bottom: 8px; }
+  ul.changes ul { margin: 4px 0 0; padding-left: 16px; }
+  ul.changes .note { margin-top: 4px; padding: 6px 10px; border-left: 3px solid var(--accent); background: var(--soft); border-radius: 4px; color: var(--ink); }
+  .hint a { color: var(--accent); }
   .empty { color: var(--muted); font-size: 14px; padding: 16px; text-align: center; border: 1px dashed var(--line); border-radius: 8px; margin-top: 10px; }
   .progress { font-size: 14px; color: var(--muted); }
   .ab { display: flex; border: 1px solid var(--line); border-radius: 8px; overflow: hidden; }
@@ -94,7 +98,7 @@
     <div class="row">
       <label>Preset <select id="preset"></select></label>
     </div>
-    <p class="hint" style="margin-top:12px">Describe what you want. Start with a layer name to target it, otherwise it applies to everything. Separate requests with <code>;</code></p>
+    <p class="hint" style="margin-top:12px">Describe what you want or what's wrong, in your own words: “warmer”, “the vocal sounds nasal”, “guitar is too bright”, “slightly wider”. Name a layer to target it, otherwise it applies to everything. <a href="https://github.com/DJWWC/layerpolish/blob/main/PROMPT_DICTIONARY.md" target="_blank" rel="noopener">See every phrase it understands</a>.</p>
     <div class="row" style="flex-wrap:nowrap">
       <textarea id="prompt" placeholder="vocal: warmer and less harsh; guitar: tighter"></textarea>
       <button id="apply">Apply</button>
@@ -123,7 +127,7 @@
   </section>
 
   <footer>
-    Prototype. Vocal tuning isn't in the browser version yet. Source: <a href="https://github.com/DJWWC/layerpolish">github.com/DJWWC/layerpolish</a>
+    Prototype · prompt interpreter v<span id="ver"></span>. Vocal tuning isn't in the browser version yet. Source: <a href="https://github.com/DJWWC/layerpolish">github.com/DJWWC/layerpolish</a>
   </footer>
 </main>
 <script type="module" src="app.js"></script>

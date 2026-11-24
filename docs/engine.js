@@ -464,6 +464,7 @@ export function toneChain(y, s) {
   let x = biquad(y, biquadCoefs("highpass", s.hpf_hz, SR));
   x = biquad(x, biquadCoefs("lowshelf", 200, SR, { gainDb: s.warmth_db, q: 0.7 }));
   x = biquad(x, biquadCoefs("peaking", 350, SR, { gainDb: s.mud_db, q: 1.0 }));
+  if (Math.abs(s.nasal_db || 0) > 0.01) x = biquad(x, biquadCoefs("peaking", 1000, SR, { gainDb: s.nasal_db, q: 1.2 }));
   x = biquad(x, biquadCoefs("peaking", 3000, SR, { gainDb: s.presence_db, q: 0.9 }));
   x = biquad(x, biquadCoefs("peaking", 6500, SR, { gainDb: s.harshness_db, q: 1.4 }));
   x = biquad(x, biquadCoefs("highshelf", 10000, SR, { gainDb: s.air_db, q: 0.7 }));
@@ -529,11 +530,25 @@ export function songPass(layers, { leadLufs = -18, supportLufs = -21.5, masterLu
   const leadType = vocals.length ? "vocal" : layers[0].type;
   let L = new Float32Array(n), R = new Float32Array(n);
   for (const l of layers) {
-    const target = l.type === leadType ? leadLufs : supportLufs, cur = lufs([l.audio]);
+    const offset = l.level_db || 0;
+    const target = (l.type === leadType ? leadLufs : supportLufs) + offset, cur = lufs([l.audio]);
     const g = cur > -60 ? target - cur : 0, lin = undb(g);
     const ang = ((l.pan + 1) * Math.PI) / 4, gl = Math.cos(ang) * lin, gr = Math.sin(ang) * lin;
-    for (let i = 0; i < n; i++) { L[i] += l.audio[i] * gl; R[i] += l.audio[i] * gr; }
-    actions.push(`${l.name}: level ${g >= 0 ? "+" : ""}${g.toFixed(1)} dB (target ${target} LUFS)`);
+    // pseudo-stereo width: a delayed, low-cut copy added to one side and subtracted from the other
+    // (mono-compatible: it cancels when L and R are summed; lows stay centred)
+    const w = l.width || 0;
+    let side = null;
+    if (w > 0.01) {
+      const d = Math.round(0.011 * SR), dl = new Float32Array(n);
+      for (let i = d; i < n; i++) dl[i] = l.audio[i - d];
+      side = biquad(dl, biquadCoefs("highpass", 300, SR));
+    }
+    const sg = w * 0.5 * lin;
+    for (let i = 0; i < n; i++) {
+      const sd = side ? side[i] * sg : 0;
+      L[i] += l.audio[i] * gl + sd; R[i] += l.audio[i] * gr - sd;
+    }
+    actions.push(`${l.name}: level ${g >= 0 ? "+" : ""}${g.toFixed(1)} dB (target ${target.toFixed(1)} LUFS${offset ? `, includes ${offset > 0 ? "+" : ""}${offset} dB requested` : ""})` + (w > 0.01 ? `, width ${Math.round(w * 100)}%` : ""));
   }
   [L, R] = compressor([L, R], -16, 2, 20, 200);
   actions.push("mix bus: glue compression 2:1");
@@ -574,7 +589,7 @@ export async function runSession(layers, settings, onProgress = async () => {}) 
     const after = { describe: describe(audio) };
     if (l.type !== "vocal") after.timing = timingReport(detectOnsets(audio).onsets, grid);
     log.layers[l.name] = { sound_type: l.type, settings: { ...s }, steps, before, after };
-    polished.push({ name: l.name, type: l.type, audio, pan: s.pan });
+    polished.push({ name: l.name, type: l.type, audio, pan: s.pan, width: s.width, level_db: s.level_db });
   }
   await onProgress("Song-level pass…");
   const { stereo, actions, finalLufs } = songPass(polished);

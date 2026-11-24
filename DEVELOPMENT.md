@@ -27,13 +27,35 @@ descriptors), never audio.
 ## Current state (Nov 2026)
 
 - Browser version (`docs/`, GitHub Pages) and Python version (repo root).
-- Plain-English adjustments use **offline keyword rules** (`docs/settings.js`
-  `applyPrompt`, `assistant.py` `ask_offline`). These are free and work
-  offline, but they only understand set phrases ("warmer", "tighter", "less
-  harsh"…).
-- The Python version can already use Claude through tool calls
-  (`assistant.py` `ask_claude`) if `ANTHROPIC_API_KEY` is set. The browser
-  version can't yet.
+- Plain-English adjustments in the browser use the **offline interpreter v2**
+  (`docs/interpret.js`). It handles qualities and problems, modifiers (less, too,
+  slightly, a lot), character words, removal, level and width, layer lists, and
+  messages for unsupported requests. It's free and works offline. The full
+  phrase list, with version history, is in **`PROMPT_DICTIONARY.md`**, which is
+  generated from the code.
+- Knobs: 17 per layer, including `nasal_db`, `width` and `level_db` (added with
+  interpreter v2, in both versions).
+- The Python version's offline rules (`assistant.py` `ask_offline`) are still
+  v1 keyword rules. Its Claude path (`ask_claude`) can use all 17 knobs if
+  `ANTHROPIC_API_KEY` is set.
+
+### Updating the interpreter
+
+1. Edit `VOCAB` / `ABSOLUTE` / `UNSUPPORTED` in `docs/interpret.js`. Add a
+   `show:` string if the regex won't read well when generated.
+2. Bump `INTERPRETER_VERSION` and add a line to `HISTORY`.
+3. Add test phrases to `tests/interpret_test.mjs` and run
+   `node tests/interpret_test.mjs`.
+4. Regenerate the dictionary: `node tools/build_dictionary.mjs > PROMPT_DICTIONARY.md`.
+
+### Roadmap stages
+
+1. **Done:** smarter offline interpreter (v2).
+2. **Next:** guided prompting. Suggestions from the analysis ("vocal looks
+   harsh, try 'smoother'"), a preview of what a request will change, undo and
+   per-request A/B. Still free and offline.
+3. **Then:** Claude as the fallback for anything the interpreter doesn't
+   understand (Level 1 below). This needs an API key. Costs are below.
 
 ## AI roadmap
 

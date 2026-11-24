@@ -116,7 +116,8 @@ def main():
         if L["type"] == "vocal":  # sustained instruments would pump
             y = repair.gate_gaps(y, SR, s["denoise"])
         steps.append("tone chain: " + ", ".join(f"{k}={v:g}" for k, v in s.items()
-                                                 if k not in ("denoise", "timing_strength", "tuning_strength")))
+                                                 if k not in ("denoise", "timing_strength", "tuning_strength",
+                                                              "pan", "width", "level_db")))
         after = {"describe": an.describe(y, SR)}
         if L["type"] != "vocal":
             after["timing"] = an.timing_report(an.detect_onsets(y, SR), grid, SR)
@@ -124,7 +125,8 @@ def main():
             f0, v, hop = an.track_pitch(y, SR)
             after["pitch"] = an.pitch_report(an.segment_notes(f0, v, hop, SR), scale)
         sf.write(os.path.join(args.out, f"{name}_polished.wav"), y, SR, subtype="PCM_24")
-        polished[name] = {"audio": y, "type": L["type"], "pan": s["pan"]}
+        polished[name] = {"audio": y, "type": L["type"], "pan": s["pan"], "width": s.get("width", 0.0),
+                          "level_db": s.get("level_db", 0.0)}
         log["layers"][name] = {"source": L["path"], "sound_type": L["type"], "settings": s,
                                "steps": steps, "before": L["recognised"], "after": after}
         print(f"polished {name}: " + " | ".join(steps[:-1]))

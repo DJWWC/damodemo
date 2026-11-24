@@ -1,4 +1,5 @@
-import { PARAMS, SOUND_TYPES, PRESETS, defaultSettings, applyPrompt } from "./settings.js";
+import { PARAMS, SOUND_TYPES, PRESETS, defaultSettings } from "./settings.js";
+import { interpret, INTERPRETER_VERSION } from "./interpret.js";
 import { SR, encodeWav } from "./engine.js";
 import { demoGuitar, demoVocal } from "./demo.js";
 
@@ -108,7 +109,7 @@ $("preset").onchange = () => {
   renderLayers();
 };
 
-const EXAMPLES = ["vocal: warmer and less harsh", "guitar: tighter", "vocal: drier and more intimate", "more reverb", "guitar: brighter", "bass: punchier", "less noise", "vocal: pan left"];
+const EXAMPLES = ["vocal: warmer and less harsh", "the vocal sounds a bit nasal", "guitar is too bright", "I can't hear the vocal", "guitar: tighter and wider", "make it more vintage", "vocal: no reverb", "dreamy guitar"];
 $("chips").innerHTML = EXAMPLES.map((e) => `<span class="chip">${e}</span>`).join("");
 $("chips").onclick = (e) => { if (e.target.classList.contains("chip")) { $("prompt").value = e.target.textContent; applyNow(); } };
 
@@ -117,13 +118,14 @@ function applyNow() {
   if (!text) return;
   if (!state.layers.length) { $("changes").innerHTML = "<li>Add a layer first.</li>"; return; }
   const layersByName = Object.fromEntries(state.layers.map((l) => [l.name, l]));
-  const log = applyPrompt(text, layersByName, state.settings);
+  const { changes, notes } = interpret(text, layersByName, state.settings, state.baseline);
   const li = document.createElement("li");
-  li.innerHTML = `<b>“${text.replace(/</g, "&lt;")}”</b>: ` + (log.length
-    ? log.map((c) => `<code>${c.layer}.${c.param}</code> ${c.from} → ${c.to}`).join(", ")
-    : "no matching adjustment. Try words like warmer, brighter, tighter, less harsh, more reverb, punchier, drier.");
+  const safe = (s) => s.replace(/&/g, "&amp;").replace(/</g, "&lt;");
+  li.innerHTML = `<b>“${safe(text)}”</b>`
+    + (changes.length ? "<ul>" + changes.map((c) => `<li><code>${safe(c.text)}</code></li>`).join("") + "</ul>" : "")
+    + notes.map((n) => `<div class="note">${safe(n)}</div>`).join("");
   $("changes").prepend(li);
-  $("prompt").value = "";
+  if (changes.length) $("prompt").value = "";
   renderLayers();
 }
 $("apply").onclick = applyNow;
@@ -272,3 +274,4 @@ $("play").onclick = () => {
 };
 
 renderLayers();
+$("ver").textContent = INTERPRETER_VERSION;

@@ -26,6 +26,10 @@ The browser version does all the processing on your own device in
 JavaScript (`docs/`). Your audio is never uploaded. It has everything in the
 Python version except vocal tuning.
 
+Every phrase the adjustment box understands, and what each one changes, is
+listed in **[PROMPT_DICTIONARY.md](PROMPT_DICTIONARY.md)**. Plans and costs for
+AI features are in [DEVELOPMENT.md](DEVELOPMENT.md).
+
 ## The ownership principle
 
 Everything that comes out is **your recording, edited and processed**: slices
@@ -135,8 +139,11 @@ never is.
 | `song.py` | Song-level pass: unmasking, low-end, balance, bus compression, loudness and limiting |
 | `polish.py` | Command-line entry point |
 | `make_demo.py` | Generates sloppy test takes |
-| `docs/` | Browser version, served by GitHub Pages: `engine.js` (all DSP), `settings.js` (sound types, presets, knobs, prompt rules), `app.js` (page), `worker.js` (background processing), `demo.js` (demo takes) |
+| `docs/` | Browser version, served by GitHub Pages: `engine.js` (all DSP), `settings.js` (sound types, presets, knobs), `app.js` (page), `worker.js` (background processing), `demo.js` (demo takes) |
+| `docs/interpret.js` | Plain-English interpreter (v2): vocabulary, modifiers, layer targeting |
 | `tests/engine_test.mjs` | Runs the browser engine end to end in Node: `node tests/engine_test.mjs /tmp/out` |
+| `tests/interpret_test.mjs` | Phrase tests for the interpreter: `node tests/interpret_test.mjs` |
+| `tools/build_dictionary.mjs` | Regenerates `PROMPT_DICTIONARY.md` from `docs/interpret.js` |
 
 ## Known limitations (it's a prototype)
 
