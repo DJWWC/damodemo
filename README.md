@@ -38,6 +38,9 @@ guide is in the **How to use** tab on the right edge of the page.
 Nothing is saved between visits yet, so download your mix before closing the
 page.
 
+**Testing:** a step-by-step real-world test plan for iPad is in
+[TESTING.md](TESTING.md).
+
 ## Try it in your browser
 
 **https://djwwc.github.io/layerpolish/**
